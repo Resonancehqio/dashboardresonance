@@ -16,7 +16,7 @@ export default async (req, context) => {
   }
 
   const auth = Buffer.from(`${ATLASSIAN_EMAIL}:${ATLASSIAN_TOKEN}`).toString('base64');
-  const confluenceUrl = `https://${ATLASSIAN_DOMAIN}/wiki/rest/api/content?spaceKey=RC&type=page&orderby=lastModified%20desc&limit=10&expand=body.storage,version`;
+  const confluenceUrl = `https://${ATLASSIAN_DOMAIN}/wiki/rest/api/content?spaceKey=RC&type=page&limit=10&expand=body.storage,version`;
 
   try {
     const resp = await fetch(confluenceUrl, {
@@ -85,11 +85,9 @@ export default async (req, context) => {
         }
       } catch (e) {
         console.warn('Claude summarization failed:', e.message);
-        // Continue without summaries
       }
     }
 
-    // Strip body HTML before returning to client
     const result = pages.map(p => ({
       title: p.title,
       updated: p.updated,
