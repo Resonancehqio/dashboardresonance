@@ -27,15 +27,21 @@ export default async (req, context) => {
   }
 
   const auth = Buffer.from(`${ATLASSIAN_EMAIL}:${ATLASSIAN_TOKEN}`).toString('base64');
-  const jql = encodeURIComponent(`project = ${project.toUpperCase()} ORDER BY updated DESC`);
-  const jiraUrl = `https://${ATLASSIAN_DOMAIN}/rest/api/3/search?jql=${jql}&maxResults=50&fields=summary,status,assignee,priority,updated,issuetype`;
+  const jiraUrl = `https://${ATLASSIAN_DOMAIN}/rest/api/3/search/jql`;
 
   try {
     const resp = await fetch(jiraUrl, {
+      method: 'POST',
       headers: {
         'Authorization': `Basic ${auth}`,
-        'Accept': 'application/json'
-      }
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        jql: `project = ${project.toUpperCase()} ORDER BY updated DESC`,
+        maxResults: 50,
+        fields: ['summary', 'status', 'assignee', 'priority', 'updated', 'issuetype']
+      })
     });
 
     if (!resp.ok) {
