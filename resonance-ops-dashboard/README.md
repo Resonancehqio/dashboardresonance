@@ -43,7 +43,7 @@ Browser → Netlify CDN (index.html)
        → /.netlify/functions/confluence → Confluence REST API → Anthropic API (summaries)
 ```
 
-All API credentials stay server-side in Netlify env vars. Nothing sensitive in the client code.
+All API credentials stay server-side in Netlify env vars. Nothing is sensitive in the client code.
 
 ## Project Structure
 
