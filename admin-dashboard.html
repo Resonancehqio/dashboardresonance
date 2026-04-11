@@ -1,0 +1,4356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Parish Dashboard — Saints Peter &amp; Paul Orthodox Cathedral</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="/supabase-client.js"></script>
+<script src="/auth.js"></script>
+<style>
+:root {
+  --vellum: #F6F1E8;
+  --vellum-mid: #EDE7DC;
+  --maroon: #7B1D2A;
+  --maroon-deep: #5C1520;
+  --apse: #3B0F18;
+  --gold: #B88328;
+  --gold-lt: #E8C97A;
+  --stone: #7A6648;
+  --ink: #2C1F16;
+  --verdigris: #3D6B5E;
+  --f-display: 'Cormorant Garamond', Georgia, serif;
+  --f-body: 'EB Garamond', Georgia, serif;
+  --f-ui: 'Cinzel', Georgia, serif;
+  --f-data: 'Inter', system-ui, -apple-system, sans-serif;
+  --rule-faint: 1px solid rgba(123,29,42,.14);
+  --rule-hair: 1px solid rgba(123,29,42,.07);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--vellum);
+  color: var(--ink);
+  font-family: var(--f-data);
+  font-size: 1rem;
+  line-height: 1.55;
+  min-height: 100vh;
+}
+
+/* ── LOGIN SCREEN ── */
+.login-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  text-align: center;
+}
+.login-card {
+  background: #fff;
+  border: var(--rule-faint);
+  border-radius: 8px;
+  padding: 2.5rem 2.25rem 2rem;
+  width: 340px;
+  max-width: 90vw;
+  box-shadow: 0 4px 24px rgba(28,20,16,.08);
+  text-align: center;
+}
+.login-logo {
+  font-family: var(--f-ui);
+  font-size: 1.1rem;
+  letter-spacing: .15em;
+  color: var(--maroon);
+  margin-bottom: .35rem;
+}
+.login-subtitle {
+  font-family: var(--f-display);
+  font-style: italic;
+  color: var(--stone);
+  font-size: 1.15rem;
+  margin-bottom: 2rem;
+}
+.login-input {
+  font-family: var(--f-data);
+  font-size: 1rem;
+  padding: .65rem 1rem;
+  border: var(--rule-faint);
+  border-radius: 4px;
+  background: #fff;
+  width: 300px;
+  max-width: 90vw;
+  margin-bottom: .75rem;
+  outline: none;
+}
+.login-input:focus { border-color: var(--maroon); }
+.login-btn {
+  font-family: var(--f-ui);
+  font-size: .55rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  background: var(--maroon);
+  color: var(--vellum);
+  border: none;
+  padding: .7rem 2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background .2s;
+}
+.login-btn:hover { background: var(--maroon-deep); }
+.login-sent {
+  font-family: var(--f-ui);
+  font-size: .5rem;
+  letter-spacing: .1em;
+  color: var(--stone);
+  margin-top: .75rem;
+  max-width: 300px;
+}
+
+/* ── MEGA NAV ── */
+.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; background: rgba(246,241,232,.97); backdrop-filter: blur(10px); border-bottom: var(--rule-faint); }
+.nav-inner { max-width: 1380px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 60px; padding: 0 3rem; }
+.nav-logo-img { height: 38px; width: auto; display: block; }
+.nav-mega-group { flex: 1; justify-content: center; height: 100%; display: flex; align-items: center; }
+.nav-links { display: flex; align-items: center; list-style: none; height: 100%; }
+.nav-links > li { height: 100%; display: flex; align-items: center; }
+.nav-links > li > a { font-family: var(--f-ui); font-size: .82rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); padding: 0 .85rem; height: 100%; display: flex; align-items: center; transition: color .18s; border-bottom: 2px solid transparent; white-space: nowrap; }
+.nav-links > li > a:hover { color: var(--maroon); border-bottom-color: var(--gold); }
+.mega-panel { position: absolute; top: 60px; left: 0; right: 0; background: var(--vellum); border-top: 2px solid var(--maroon); border-bottom: var(--rule-faint); box-shadow: 0 16px 48px rgba(28,20,16,.13); opacity: 0; pointer-events: none; transform: translateY(-8px); transition: opacity .22s ease, transform .22s ease; z-index: 100; display: grid; grid-template-columns: 420px 1fr; }
+.mega-panel.mega-visible { opacity: 1; pointer-events: all; transform: translateY(0); }
+.mega-photo { position: relative; overflow: hidden; background-color: var(--apse); }
+.mega-photo-bg { position: absolute; inset: 0; background-size: cover; background-position: center; transform: scale(1); transition: transform 11s ease; }
+.mega-panel.mega-visible .mega-photo-bg { transform: scale(1.18); }
+.mega-photo-overlay { position: absolute; inset: 0; background: linear-gradient(to right, rgba(59,15,24,.88) 0%, rgba(59,15,24,.72) 100%); }
+.mega-photo-content { position: relative; z-index: 1; padding: 2rem; display: flex; flex-direction: column; height: 100%; min-height: 220px; }
+.mega-photo-label { font-family: var(--f-ui); font-size: .62rem; letter-spacing: .22em; text-transform: uppercase; color: rgba(232,201,122,.65); display: block; margin-bottom: .4rem; }
+.mega-photo-quote { font-family: var(--f-display); font-style: italic; font-weight: 300; font-size: 1.45rem; color: rgba(246,241,232,.92); line-height: 1.25; }
+.mega-content { border-left: 2px solid var(--maroon); }
+.mega-inner { padding: 2rem 2.25rem; display: grid; gap: 0; height: 100%; }
+.mega-col { padding: 0 1.5rem; border-right: 1px solid rgba(123,29,42,.07); }
+.mega-col:first-child { padding-left: 0; }
+.mega-col:last-child { border-right: none; padding-right: 0; }
+.mega-col-head { font-family: var(--f-ui); font-size: .65rem; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: var(--stone); display: block; margin-bottom: .85rem; padding-bottom: .45rem; border-bottom: 1px solid rgba(184,131,40,.22); }
+.mega-link { display: block; font-family: var(--f-body); font-size: 1.13rem; color: var(--ink); padding: .22rem 0; transition: color .15s, padding-left .15s; line-height: 1.4; }
+.mega-link:hover { color: var(--maroon); padding-left: .4rem; }
+.mega-sub { display: block; font-family: var(--f-body); font-style: italic; font-size: .95rem; color: var(--stone); margin-bottom: .2rem; line-height: 1.3; }
+.mega-cta { margin-top: 1.5rem; padding-top: 1.25rem; border-top: var(--rule-faint); }
+.mega-cta-btn { font-family: var(--f-ui); font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: var(--maroon); border: 1px solid rgba(123,29,42,.28); padding: .48rem .9rem; display: block; text-align: center; transition: all .2s; }
+.mega-cta-btn:hover { background: var(--maroon); color: var(--vellum); }
+.nav-give { font-family: var(--f-ui); font-size: .82rem; letter-spacing: .14em; text-transform: uppercase; color: var(--vellum); background: var(--maroon); padding: .5rem 1.1rem; transition: background .2s; white-space: nowrap; margin-left: 1rem; }
+.nav-give:hover { background: var(--maroon-deep); }
+.nav-hamburger { display: none; flex-direction: column; justify-content: space-between; width: 28px; height: 20px; cursor: pointer; padding: 0; background: none; border: none; z-index: 400; }
+.nav-hamburger span { display: block; width: 100%; height: 2px; background: var(--maroon); transition: all .28s ease; transform-origin: center; }
+.nav-hamburger.open span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
+.nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.nav-hamburger.open span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
+.nav-drawer { position: fixed; top: 0; right: 0; width: 300px; max-width: 85vw; bottom: 0; background: var(--apse); z-index: 350; transform: translateX(100%); transition: transform .32s cubic-bezier(.4,0,.2,1), visibility 0s .32s; display: flex; flex-direction: column; overflow-y: auto; visibility: hidden; }
+.nav-drawer.open { transform: translateX(0); visibility: visible; transition: transform .32s cubic-bezier(.4,0,.2,1), visibility 0s; }
+.nav-drawer-overlay { position: fixed; inset: 0; background: rgba(21,8,4,.65); z-index: 340; opacity: 0; pointer-events: none; transition: opacity .32s; }
+.nav-drawer-overlay.open { opacity: 1; pointer-events: all; }
+.nav-drawer-head { padding: 1.5rem 1.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; justify-content: space-between; }
+.nav-drawer-logo { font-family: var(--f-display); font-weight: 500; font-size: 1.2rem; color: rgba(246,241,232,.95); }
+.nav-drawer-logo span { font-family: var(--f-ui); font-size: .82rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(246,241,232,.6); display: block; margin-top: 2px; }
+.nav-drawer-close { width: 32px; height: 32px; background: rgba(255,255,255,.08); border: none; color: rgba(255,255,255,.65); cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; transition: background .2s; }
+.nav-drawer-close:hover { background: rgba(255,255,255,.15); }
+.dr-accordion { flex: 1; overflow-y: auto; }
+.dr-section { border-bottom: 1px solid rgba(255,255,255,.06); }
+.dr-section-head { display: flex; align-items: center; justify-content: space-between; padding: 1.1rem 1.25rem; cursor: pointer; transition: background .18s; user-select: none; }
+.dr-section-head:hover { background: rgba(255,255,255,.03); }
+.dr-section.open .dr-section-head { background: rgba(184,131,40,.07); }
+.dr-section-name { font-family: var(--f-ui); font-size: .9rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(246,241,232,.85); }
+.dr-section.open .dr-section-name { color: rgba(232,201,122,1); }
+.dr-section-toggle { font-family: var(--f-ui); font-size: 1rem; color: rgba(184,131,40,.7); line-height: 1; width: 16px; text-align: center; flex-shrink: 0; }
+.dr-section.open .dr-section-toggle { color: rgba(184,131,40,1); }
+.dr-section-links { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
+.dr-section.open .dr-section-links { max-height: 700px; }
+.dr-link { display: block; padding: .85rem 1.25rem .75rem; border-bottom: 1px solid rgba(255,255,255,.06); transition: background .15s; text-decoration: none; }
+.dr-link:last-child { border-bottom: none; }
+.dr-link:hover { background: rgba(255,255,255,.06); }
+.dr-link-name { font-family: var(--f-body); font-size: 1.3rem; color: rgba(246,241,232,.92); display: block; line-height: 1.25; }
+.dr-link-sub { font-family: var(--f-body); font-style: italic; font-size: .95rem; color: rgba(232,201,122,.55); display: block; margin-top: .08rem; }
+.nav-drawer-give { margin: 1.25rem 1.75rem; display: block; text-align: center; font-family: var(--f-ui); font-size: .82rem; letter-spacing: .16em; text-transform: uppercase; padding: .85rem; background: var(--maroon); color: var(--vellum); transition: background .2s; }
+.nav-drawer-give:hover { background: var(--maroon-deep); }
+.nav-my-parish { position: relative; margin-right: .35rem; }
+.nav-my-parish-btn { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: none; border: 1px solid rgba(123,29,42,.35); cursor: pointer; color: var(--maroon); transition: all .2s; padding: 0; flex-shrink: 0; }
+.nav-my-parish-btn:hover { background: var(--maroon); color: var(--vellum); border-color: var(--maroon); }
+.nav-my-parish-panel { position: absolute; top: calc(100% + 6px); right: 0; width: 230px; background: var(--vellum); border: 1px solid rgba(123,29,42,.15); box-shadow: 0 8px 32px rgba(28,20,16,.12); opacity: 0; pointer-events: none; transform: translateY(-6px); transition: opacity .18s, transform .18s; z-index: 500; }
+.nav-my-parish-panel.open { opacity: 1; pointer-events: all; transform: translateY(0); }
+.nav-mp-link { display: block; padding: .85rem 1.1rem; border-bottom: 1px solid rgba(123,29,42,.07); text-decoration: none; transition: background .15s; }
+.nav-mp-link:last-child { border-bottom: none; }
+.nav-mp-link:hover { background: rgba(123,29,42,.04); }
+.nav-mp-link-name { font-family: var(--f-ui); font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; color: var(--maroon); display: block; margin-bottom: .15rem; }
+.nav-mp-link-sub { font-family: var(--f-body); font-style: italic; font-size: .88rem; color: var(--stone); display: block; }
+
+/* ── BUTTONS ── */
+.btn { font-family: var(--f-ui); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; padding: .6rem 1.3rem; border: 1px solid; cursor: pointer; transition: all .18s; white-space: nowrap; display: inline-flex; align-items: center; gap: .4rem; position: relative; overflow: hidden; text-decoration: none; }
+.btn:active { transform: scale(.95); transition: transform .08s; }
+.btn-primary { background: var(--maroon); color: var(--vellum); border-color: var(--maroon); }
+.btn-primary:hover { background: var(--maroon-deep); border-color: var(--maroon-deep); }
+.btn-ghost { background: transparent; color: var(--maroon); border-color: rgba(123,29,42,.28); }
+.btn-ghost:hover { background: var(--maroon); color: var(--vellum); border-color: var(--maroon); }
+.btn-sm { font-size: .56rem; padding: .4rem .85rem; letter-spacing: .12em; }
+.btn .ripple { position: absolute; border-radius: 50%; background: rgba(246,241,232,.35); transform: scale(0); animation: rippleAnim .5s ease-out; pointer-events: none; }
+
+/* ── CSS CROSS (avoids iOS emoji rendering) ── */
+.dash-cross {
+  display: inline-block;
+  position: relative;
+  width: .75em;
+  height: .75em;
+  vertical-align: middle;
+  margin-right: .15em;
+}
+.dash-cross::before,
+.dash-cross::after {
+  content: '';
+  position: absolute;
+  background: var(--maroon);
+  border-radius: 1px;
+}
+.dash-cross::before { width: 2px; height: 100%; left: 50%; top: 0; transform: translateX(-50%); }
+.dash-cross::after  { width: 100%; height: 2px; top: 30%; left: 0; }
+
+/* ── GREETING HEADER ── */
+.greeting-header {
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(28,20,16,.06);
+  padding: 1.75rem 2.25rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.greeting-left { display: flex; align-items: center; gap: 1.25rem; }
+.greeting-avatar {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: var(--maroon);
+  color: var(--vellum);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--f-display);
+  font-size: 1.4rem;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+.greeting-text h1 { font-family: var(--f-display); font-weight: 300; font-size: 1.65rem; color: var(--ink); line-height: 1.15; }
+.greeting-liturgical { font-family: var(--f-display); font-style: italic; font-size: .95rem; color: var(--stone); margin-top: .15rem; }
+.greeting-right { display: flex; flex-direction: column; align-items: flex-end; gap: .35rem; }
+.greeting-right-top { display: flex; align-items: center; gap: .6rem; }
+.greeting-date { font-family: var(--f-ui); font-size: .62rem; letter-spacing: .16em; text-transform: uppercase; color: var(--stone); }
+.sign-out-btn {
+  font-family: var(--f-ui);
+  font-size: .58rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--stone);
+  background: none;
+  border: 1px solid rgba(123,29,42,.18);
+  padding: .35rem .85rem;
+  cursor: pointer;
+  transition: all .18s;
+}
+.sign-out-btn:hover { color: var(--maroon); border-color: var(--maroon); }
+
+/* ── NOTIFICATION BELL ── */
+.notif-wrap {
+  position: relative;
+}
+.notif-bell {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--stone);
+  padding: .3rem .4rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  transition: color .2s, background .2s;
+  vertical-align: middle;
+}
+.notif-bell:hover { color: var(--maroon); background: rgba(123,29,42,.07); }
+.notif-bell.has-items { color: var(--maroon); }
+.notif-count {
+  position: absolute;
+  top: 0; right: 0;
+  transform: translate(40%, -40%);
+  background: var(--maroon);
+  color: #fff;
+  font-family: var(--f-ui);
+  font-size: 10px;
+  letter-spacing: 0;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  pointer-events: none;
+}
+.notif-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + .5rem);
+  right: 0;
+  width: 340px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.14);
+  border: var(--rule-faint);
+  z-index: 950;
+  overflow: hidden;
+}
+.notif-dropdown.open { display: block; }
+.notif-dropdown-header {
+  padding: .75rem 1rem;
+  border-bottom: var(--rule-faint);
+  font-family: var(--f-ui);
+  font-size: .55rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--maroon);
+}
+#notif-list {
+  max-height: 420px;
+  overflow-y: auto;
+}
+.notif-card {
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+  padding: .75rem 1rem;
+  border-bottom: var(--rule-hair);
+  cursor: pointer;
+  transition: background .15s;
+  border-left: 3px solid transparent;
+}
+.notif-card:last-child { border-bottom: none; }
+.notif-card:hover { background: rgba(123,29,42,.04); }
+.notif-card-overdue  { border-left-color: var(--maroon); }
+.notif-card-followup { border-left-color: var(--gold); }
+.notif-card-new      { border-left-color: var(--verdigris); }
+.notif-card-update   { border-left-color: var(--stone); }
+.notif-card-prayer   { border-left-color: var(--apse); }
+.notif-icon {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .85rem;
+}
+.notif-card-overdue  .notif-icon { background: rgba(123,29,42,.1);  color: var(--maroon); }
+.notif-card-followup .notif-icon { background: rgba(184,131,40,.12); color: var(--gold); }
+.notif-card-new      .notif-icon { background: rgba(61,107,94,.1);   color: var(--verdigris); }
+.notif-card-update   .notif-icon { background: rgba(122,102,72,.1);  color: var(--stone); }
+.notif-card-prayer   .notif-icon { background: rgba(59,15,24,.08);   color: var(--apse); }
+.notif-card-body { flex: 1; min-width: 0; }
+.notif-card-name {
+  font-family: var(--f-display);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.notif-card-label {
+  font-family: var(--f-ui);
+  font-size: .42rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--stone);
+  margin-top: .1rem;
+}
+.notif-card-overdue  .notif-card-label { color: var(--maroon); }
+.notif-card-followup .notif-card-label { color: var(--gold); }
+.notif-card-new      .notif-card-label { color: var(--verdigris); }
+.notif-card-prayer   .notif-card-label { color: var(--apse); }
+.notif-card-date {
+  font-size: .78rem;
+  color: var(--stone);
+  white-space: nowrap;
+  margin-top: .15rem;
+  flex-shrink: 0;
+}
+.notif-card-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: .25rem;
+  flex-shrink: 0;
+}
+.notif-dismiss {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--stone);
+  opacity: .45;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0 .1rem;
+  border-radius: 3px;
+  transition: opacity .15s, color .15s;
+}
+.notif-dismiss:hover { opacity: 1; color: var(--maroon); }
+.notif-empty {
+  padding: 2rem 1rem;
+  text-align: center;
+  font-style: italic;
+  color: var(--stone);
+  font-size: .9rem;
+}
+
+/* ── MAIN LAYOUT ── */
+#dashboard-wrap { padding-top: 60px; }
+.admin-shell { max-width: 1140px; margin: 0 auto; padding: 2rem 2rem 4rem; }
+.dash-main {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 2rem 4rem;
+  display: none;
+  flex-direction: column;
+  gap: 0;
+}
+.dash-main.loaded { display: flex; }
+
+/* ── TAB BAR ── */
+.tab-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border-bottom: 1px solid rgba(123,29,42,.12);
+  margin-bottom: 2rem;
+  position: relative;
+}
+.tab-btn {
+  font-family: var(--f-ui);
+  font-size: .72rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--stone);
+  background: none;
+  border: none;
+  padding: .85rem 1.5rem;
+  cursor: pointer;
+  position: relative;
+  transition: color .2s;
+  white-space: nowrap;
+}
+.tab-btn:hover { color: var(--maroon); }
+.tab-btn.active { color: var(--maroon); }
+.tab-indicator {
+  position: absolute;
+  bottom: -1px;
+  height: 3px;
+  background: var(--maroon);
+  transition: left .32s cubic-bezier(.22,.68,0,1), width .32s cubic-bezier(.22,.68,0,1);
+  border-radius: 1.5px 1.5px 0 0;
+}
+.tab-badge {
+  font-family: var(--f-data);
+  font-size: .6rem;
+  font-weight: 600;
+  background: rgba(123,29,42,.1);
+  color: var(--maroon);
+  padding: .1rem .42rem;
+  border-radius: 9px;
+  margin-left: .45rem;
+  vertical-align: middle;
+  display: inline-block;
+  line-height: 1.4;
+}
+
+/* ── CONTENT PANES ── */
+.tab-pane { display: none; }
+.tab-pane.active { animation: paneIn .28s cubic-bezier(.22,.68,0,1.1) forwards; }
+
+/* Each pane gets its own display type — handled here so .pane-* class rules
+   don't carry a display value that would beat .tab-pane { display:none } */
+#pane-flock.active  { display: block; }
+#pane-prayer.active { display: block; }
+#pane-parish.active { display: grid; }
+
+/* Pane inner layout */
+.pane-prayer { /* display handled by #pane-prayer.active */ }
+.pane-parish {
+  grid-template-columns: 1fr 300px;
+  gap: 2rem;
+  align-items: start;
+}
+@media (max-width: 768px) {
+  .pane-prayer, .pane-parish { grid-template-columns: 1fr; }
+}
+
+/* ── PARISH LIFE ── */
+.parish-main { display: flex; flex-direction: column; gap: 1.5rem; min-height: 200px; }
+
+/* ── ANIMATIONS ── */
+@keyframes paneIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes staggerIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.greeting-header { animation: fadeDown .4s cubic-bezier(.22,.68,0,1.05) both; }
+
+/* Bulletin skeleton while loading */
+.bulletin-skeleton {
+  background: #fff;
+  border: var(--rule-faint);
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+.skeleton-block {
+  background: var(--vellum-mid);
+  border-radius: 3px;
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+@keyframes shimmer {
+  0%, 100% { opacity: .6; }
+  50% { opacity: 1; }
+}
+
+.bulletin-hero {
+  background: #fff;
+  border: var(--rule-faint);
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+.bulletin-hero-icon {
+  width: 52px; height: 52px;
+  border-radius: 10px;
+  background: rgba(123,29,42,.08);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--maroon);
+  flex-shrink: 0;
+}
+.bulletin-hero-info { flex: 1; min-width: 0; }
+.bulletin-hero-kicker {
+  font-family: var(--f-ui);
+  font-size: max(.5rem, 9px);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--stone);
+  display: block;
+  margin-bottom: .2rem;
+}
+.bulletin-hero-date {
+  font-family: var(--f-display);
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: var(--apse);
+  display: block;
+}
+.bulletin-hero-title {
+  font-size: .88rem;
+  color: var(--stone);
+  display: block;
+  margin-top: .1rem;
+}
+.bulletin-hero-actions {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+.bulletin-hero-actions a {
+  font-family: var(--f-ui);
+  font-size: max(.48rem, 9px);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--maroon);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.bulletin-hero-actions a:hover { text-decoration: underline; }
+.bulletin-hero-actions a.btn-primary {
+  background: var(--maroon);
+  color: var(--vellum);
+  padding: .4rem .9rem;
+  border-radius: 4px;
+}
+.bulletin-hero-actions a.btn-primary:hover { background: var(--maroon-deep); text-decoration: none; }
+
+/* ── PARISH LIFE: EVENTS SECTION ── */
+.parish-events-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: .75rem;
+}
+
+/* ── PARISH LIFE: SITE TOOLS SIDEBAR ── */
+.site-tools-sidebar { position: sticky; top: 2rem; display: flex; flex-direction: column; gap: 1.25rem; }
+.site-tools-panel, .tools-panel {
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(28,20,16,.05);
+  padding: 1.25rem;
+}
+.site-tools-panel-label, .tools-panel-head {
+  font-family: var(--f-ui);
+  font-size: .58rem; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--stone); display: block; margin-bottom: .85rem;
+  padding-bottom: .6rem; border-bottom: var(--rule-faint);
+}
+.site-tool-tile, .tool-tile {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .6rem .5rem; border-radius: 3px; text-decoration: none;
+  color: var(--ink); transition: background .15s; cursor: pointer;
+  border: none; background: transparent; width: 100%; text-align: left; margin-bottom: .15rem;
+}
+.site-tool-tile:last-child, .tool-tile:last-child { margin-bottom: 0; }
+.site-tool-tile:hover, .tool-tile:hover { background: rgba(123,29,42,.04); }
+.site-tool-tile-icon, .tool-icon {
+  width: 30px; height: 30px; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background .15s, color .15s;
+}
+.tool-icon.cms  { background: rgba(123,29,42,.08); color: var(--maroon); }
+.tool-icon.cal  { background: rgba(184,131,40,.1);  color: var(--gold); }
+.tool-icon.bull { background: rgba(61,107,94,.08);  color: var(--verdigris); }
+.tool-icon.give { background: rgba(59,15,24,.06);   color: var(--apse); }
+.site-tool-tile-label, .tool-tile-label { font-family: var(--f-data); font-size: .78rem; font-weight: 500; color: var(--ink); }
+.site-tool-tile-sub, .tool-tile-sub { font-family: var(--f-data); font-size: .65rem; color: var(--stone); display: block; }
+.site-tools-divider { border: none; border-top: var(--rule-hair); margin: .5rem 0; }
+
+/* Overrides list inside sidebar */
+.co-row {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .35rem 0;
+  border-bottom: var(--rule-hair);
+  font-size: .88rem;
+}
+
+
+/* ── SECTION LABELS ── */
+.section-kicker {
+  font-family: var(--f-ui);
+  font-size: .58rem;
+  text-transform: uppercase;
+  letter-spacing: .2em;
+  color: var(--stone);
+  display: block;
+  margin-bottom: .75rem;
+}
+.section-title {
+  font-family: var(--f-display);
+  font-size: 1.6rem;
+  font-weight: 300;
+  color: var(--apse);
+  margin-bottom: 1rem;
+}
+
+/* ── SEARCH + FILTERS ── */
+.flock-search {
+  font-family: var(--f-data);
+  font-size: 1rem;
+  padding: .6rem 1rem;
+  border: var(--rule-faint);
+  border-radius: 4px;
+  background: #fff;
+  width: 100%;
+  margin-bottom: .75rem;
+  outline: none;
+}
+.flock-search:focus { border-color: var(--maroon); }
+.flock-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-bottom: 1rem;
+}
+.flock-pill {
+  font-family: var(--f-body);
+  font-size: .88rem;
+  letter-spacing: .02em;
+  text-transform: none;
+  padding: .3rem .9rem;
+  border: 1px solid var(--stone);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--stone);
+  cursor: pointer;
+  transition: all .2s;
+}
+.flock-pill:hover { border-color: var(--maroon); color: var(--maroon); }
+.flock-pill.active {
+  background: var(--maroon);
+  color: var(--vellum);
+  border-color: var(--maroon);
+}
+.flock-add-btn {
+  font-family: var(--f-body);
+  font-size: .88rem;
+  letter-spacing: .02em;
+  text-transform: none;
+  padding: .3rem .9rem;
+  border: 1px solid var(--maroon);
+  border-radius: 20px;
+  background: var(--maroon);
+  color: var(--vellum);
+  cursor: pointer;
+  transition: background .2s;
+  margin-left: auto;
+}
+.flock-add-btn:hover { background: var(--maroon-deep); }
+
+/* ── FLOCK ROWS ── */
+.p-card-list { display: flex; flex-direction: column; gap: 0; }
+.p-card {
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(28,20,16,.05);
+  display: flex;
+  align-items: center;
+  padding: .9rem 1.25rem;
+  gap: 1rem;
+  cursor: pointer;
+  transition: all .2s;
+  border-bottom: 1px solid rgba(123,29,42,.05);
+  animation: staggerIn .4s cubic-bezier(.22,.68,0,1.05) backwards;
+}
+.p-card:first-child { border-radius: 2px 2px 0 0; }
+.p-card:last-of-type { border-radius: 0 0 2px 2px; border-bottom: none; }
+.p-card:hover { box-shadow: 0 4px 16px rgba(28,20,16,.10); transform: translateY(-1px); z-index: 2; position: relative; }
+.p-card:nth-child(1)  { animation-delay: 0ms; }
+.p-card:nth-child(2)  { animation-delay: 40ms; }
+.p-card:nth-child(3)  { animation-delay: 80ms; }
+.p-card:nth-child(4)  { animation-delay: 120ms; }
+.p-card:nth-child(5)  { animation-delay: 160ms; }
+.p-card:nth-child(6)  { animation-delay: 200ms; }
+.p-card:nth-child(n+7) { animation-delay: 240ms; }
+.p-card-flagged { border-left: 3px solid var(--maroon); }
+/* Row internals */
+.p-card-avatar {
+  width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--f-display); font-size: 1rem; font-weight: 500;
+  color: var(--vellum); overflow: hidden;
+}
+.p-card-avatar.cat-parishioner { background: var(--maroon); }
+.p-card-avatar.cat-inquirer    { background: var(--verdigris); }
+.p-card-avatar.cat-catechumen  { background: var(--gold); }
+.p-card-avatar.cat-inactive    { background: var(--stone); }
+.p-card-info { flex: 1; min-width: 0; }
+.p-card-name {
+  font-family: var(--f-display); font-weight: 500; font-size: 1.08rem; color: var(--ink); line-height: 1.2;
+}
+.p-card-sub { font-size: .88rem; color: var(--stone); margin-top: .1rem; }
+.p-card-status {
+  font-family: var(--f-data); font-size: .62rem; font-weight: 500; letter-spacing: .06em;
+  text-transform: uppercase; padding: .2rem .55rem; border-radius: 3px; white-space: nowrap; flex-shrink: 0;
+}
+.p-status-active     { background: rgba(61,107,94,.1);   color: var(--verdigris); }
+.p-status-inquirer   { background: rgba(184,131,40,.12); color: #7a5a1a; }
+.p-status-catechumen { background: rgba(123,29,42,.08);  color: var(--maroon); }
+.p-status-inactive   { background: rgba(122,102,72,.1);  color: var(--stone); }
+.p-status-member, .p-status-baptized { background: rgba(61,107,94,.1); color: var(--verdigris); }
+.p-card-dots { display: flex; gap: 3px; flex-shrink: 0; }
+.p-card-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(123,29,42,.12); }
+.p-card-dot.filled { background: var(--maroon); }
+.p-card-arrow { font-family: var(--f-ui); font-size: 1.1rem; color: rgba(122,102,72,.45); flex-shrink: 0; transition: transform .25s, color .2s; }
+.p-card:hover .p-card-arrow { color: var(--maroon); }
+/* Inline drawer */
+.p-card-drawer {
+  background: #fff;
+  box-shadow: inset 0 2px 6px rgba(28,20,16,.04);
+  border-bottom: 1px solid rgba(123,29,42,.08);
+  overflow: hidden;
+  max-height: 0; opacity: 0;
+  transition: max-height .35s cubic-bezier(.22,.68,0,1), opacity .25s, padding .35s;
+  padding: 0 1.25rem;
+}
+.p-card-drawer.open { max-height: 520px; opacity: 1; padding: 1.25rem; }
+.drawer-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; }
+.drawer-section-label { font-family: var(--f-ui); font-size: .54rem; letter-spacing: .18em; text-transform: uppercase; color: var(--stone); margin-bottom: .5rem; display: block; }
+.drawer-value-sm { font-family: var(--f-data); font-size: .78rem; color: var(--ink); }
+.drawer-actions { margin-top: 1rem; padding-top: .85rem; border-top: var(--rule-faint); display: flex; gap: .5rem; }
+.drawer-notes { grid-column: 1 / -1; margin-top: .5rem; }
+.drawer-note-entry { font-family: var(--f-body); font-size: .9rem; color: var(--ink); padding: .5rem 0; border-bottom: 1px solid rgba(123,29,42,.06); }
+.drawer-note-entry:last-child { border-bottom: none; }
+.drawer-note-date { font-family: var(--f-data); font-size: .65rem; color: var(--stone); margin-right: .5rem; }
+
+/* ── OLD p-card internals (kept for JS compatibility, override visually) ── */
+.p-card-avatar {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--f-ui);
+  font-size: .6rem;
+  background: var(--maroon);
+  color: var(--vellum);
+  overflow: hidden;
+}
+.p-card-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.p-card-body { flex: 1; min-width: 0; }
+.p-card-top { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+.p-card-name {
+  font-family: var(--f-display);
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+.p-card-badge {
+  font-family: var(--f-ui);
+  font-size: .4rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: .15rem .55rem;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+.p-badge-inquirer { background: var(--verdigris); color: #fff; }
+.p-badge-catechumen { background: var(--gold); color: var(--ink); }
+.p-badge-baptized, .p-badge-member { background: var(--maroon); color: var(--vellum); }
+.p-badge-transferred, .p-badge-reposed { background: var(--stone); color: #fff; font-style: italic; }
+.p-card-family {
+  font-size: .85rem;
+  color: var(--stone);
+  margin-top: .15rem;
+}
+.p-card-note {
+  font-size: .88rem;
+  color: var(--stone);
+  font-style: italic;
+  margin-top: .25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.p-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-top: .35rem;
+  font-family: var(--f-ui);
+  font-size: .42rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.p-card-followup {
+  color: var(--gold);
+  border: 1px solid var(--gold);
+  padding: .1rem .45rem;
+  border-radius: 8px;
+}
+.p-card-followup-overdue {
+  color: var(--maroon);
+  border-color: var(--maroon);
+}
+.p-card-journey { color: var(--verdigris); }
+.p-card-rule { color: var(--stone); }
+.p-empty {
+  text-align: center;
+  padding: 2rem;
+  color: var(--stone);
+  font-style: italic;
+}
+
+/* ── PRAYER LIST SECTION ── */
+.prayer-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+.pr-card {
+  padding: .75rem;
+  background: #fff;
+  border: var(--rule-faint);
+  border-radius: 6px;
+  margin-bottom: .5rem;
+}
+.pr-card-name {
+  font-family: var(--f-display);
+  font-weight: 500;
+  font-size: 1rem;
+  margin-bottom: .2rem;
+}
+.pr-card-text {
+  font-size: .9rem;
+  color: var(--ink);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: .3rem;
+}
+.pr-card-date {
+  font-size: .8rem;
+  color: var(--stone);
+  margin-bottom: .4rem;
+}
+.pr-card-actions { display: flex; gap: .5rem; }
+.pr-card-actions button {
+  font-family: var(--f-ui);
+  font-size: .42rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: .3rem .7rem;
+  border: 1px solid var(--maroon);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--maroon);
+  cursor: pointer;
+  transition: all .2s;
+}
+.pr-card-actions button:hover { background: var(--maroon); color: var(--vellum); }
+.pr-archive-link {
+  font-family: var(--f-ui);
+  font-size: .45rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--stone);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  margin-top: .5rem;
+}
+.pr-archive-link:hover { color: var(--maroon); }
+
+/* ── CURRENT PRAYER LIST ── */
+.pl-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .35rem .5rem;
+  border-bottom: var(--rule-hair);
+  font-size: .92rem;
+}
+.pl-entry button {
+  background: none;
+  border: none;
+  color: var(--stone);
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0 .3rem;
+}
+.pl-entry button:hover { color: var(--maroon); }
+.pl-add-row {
+  display: flex;
+  gap: .5rem;
+  margin-top: .5rem;
+}
+.pl-add-row input {
+  flex: 1;
+  font-family: var(--f-data);
+  font-size: .92rem;
+  padding: .4rem .65rem;
+  border: var(--rule-faint);
+  border-radius: 4px;
+  background: #fff;
+  outline: none;
+}
+.pl-add-row input:focus { border-color: var(--maroon); }
+.pl-add-row button {
+  font-family: var(--f-ui);
+  font-size: .42rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: .4rem .85rem;
+  background: var(--maroon);
+  color: var(--vellum);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.pl-add-row button:hover { background: var(--maroon-deep); }
+.pl-note {
+  font-family: var(--f-ui);
+  font-size: .45rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--stone);
+  margin-top: .75rem;
+}
+
+/* ── PARISH LIFE SECTION ── */
+.pl-bulletin-card {
+  padding: 1rem;
+  background: #fff;
+  border: var(--rule-faint);
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  margin-bottom: 1rem;
+}
+.pl-bulletin-date {
+  font-family: var(--f-display);
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--ink);
+  margin-top: .3rem;
+}
+.pl-bulletin-title {
+  font-size: .95rem;
+  color: var(--stone);
+  margin: .2rem 0 .6rem;
+}
+.pl-bulletin-actions {
+  display: flex;
+  gap: 1rem;
+}
+.pl-bulletin-actions a {
+  font-family: var(--f-ui);
+  font-size: .45rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--maroon);
+  text-decoration: none;
+}
+.pl-bulletin-actions a:hover { text-decoration: underline; }
+
+.pl-event-row {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .55rem 0;
+  border-bottom: var(--rule-hair);
+}
+.pl-event-date {
+  font-family: var(--f-ui);
+  font-size: .48rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--maroon);
+  white-space: nowrap;
+  min-width: 50px;
+}
+.pl-event-info { flex: 1; min-width: 0; }
+.pl-event-title { font-weight: 500; font-size: .95rem; display: block; }
+.pl-event-sub { font-size: .82rem; color: var(--stone); display: block; }
+.pl-event-row a {
+  font-family: var(--f-ui);
+  font-size: .42rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--maroon);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.pl-event-row a:hover { text-decoration: underline; }
+
+.pl-event-footer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: .75rem;
+}
+.pl-event-footer button {
+  font-family: var(--f-ui);
+  font-size: .45rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: .4rem 1rem;
+  border: 1px solid var(--maroon);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--maroon);
+  cursor: pointer;
+}
+.pl-event-footer button:hover { background: var(--maroon); color: var(--vellum); }
+.pl-event-footer a {
+  font-family: var(--f-ui);
+  font-size: .42rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--stone);
+  text-decoration: none;
+}
+.pl-event-footer a:hover { color: var(--maroon); }
+
+/* ── EVENT ADD/EDIT PANEL (inline) ── */
+.event-form-panel {
+  background: #fff;
+  border: var(--rule-faint);
+  border-radius: 6px;
+  padding: 1rem;
+  margin-top: .75rem;
+  display: none;
+}
+.event-form-panel.open { display: block; }
+.event-form-panel label {
+  display: block;
+  font-family: var(--f-ui);
+  font-size: .45rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--stone);
+  margin-bottom: .2rem;
+  margin-top: .6rem;
+}
+.event-form-panel label:first-child { margin-top: 0; }
+.event-form-panel input,
+.event-form-panel select,
+.event-form-panel textarea {
+  font-family: var(--f-data);
+  font-size: .92rem;
+  padding: .4rem .65rem;
+  border: var(--rule-faint);
+  border-radius: 4px;
+  background: #fff;
+  width: 100%;
+  outline: none;
+}
+.event-form-panel input:focus,
+.event-form-panel select:focus,
+.event-form-panel textarea:focus { border-color: var(--maroon); }
+.event-form-panel textarea { resize: vertical; }
+.event-form-actions {
+  display: flex;
+  gap: .5rem;
+  margin-top: .75rem;
+}
+.event-form-actions button {
+  font-family: var(--f-ui);
+  font-size: .42rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: .4rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+}
+.ef-save { background: var(--maroon); color: var(--vellum); }
+.ef-save:hover { background: var(--maroon-deep); }
+.ef-cancel { background: transparent; color: var(--stone); border: 1px solid var(--stone) !important; }
+.ef-cancel:hover { color: var(--maroon); border-color: var(--maroon) !important; }
+
+/* ── SITE SECTION ── */
+.co-page { font-weight: 500; }
+.co-type {
+  font-family: var(--f-ui);
+  font-size: .4rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--stone);
+}
+.co-date { color: var(--stone); font-size: .82rem; margin-left: auto; }
+.co-row button {
+  font-family: var(--f-ui);
+  font-size: .4rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--maroon);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: .2rem .4rem;
+}
+.co-row button:hover { text-decoration: underline; }
+
+
+/* ── PANEL OVERLAY + SLIDE-IN ── */
+.panel-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(21,8,4,.45);
+  z-index: 900;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s;
+}
+.panel-overlay.open { opacity: 1; pointer-events: auto; }
+.slide-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 860px;
+  max-width: 100vw;
+  height: 100vh;
+  background: var(--vellum);
+  z-index: 950;
+  transform: translateX(100%);
+  transition: transform .35s ease;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.slide-panel.open { transform: translateX(0); }
+
+/* ── RECORD PANEL ── */
+.rec-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.5rem 2.5rem 1.5rem 2rem;
+  border-bottom: var(--rule-faint);
+  flex-wrap: wrap;
+}
+.rec-avatar {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--f-ui);
+  font-size: 1.2rem;
+  background: var(--maroon);
+  color: var(--vellum);
+  overflow: hidden;
+}
+.rec-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.rec-header-info { flex: 1; min-width: 0; }
+.rec-name {
+  font-family: var(--f-display);
+  font-size: 1.75rem;
+  font-weight: 400;
+  color: var(--ink);
+  margin: 0;
+}
+.rec-badge { margin-top: .25rem; display: inline-block; }
+.rec-family {
+  font-size: .88rem;
+  color: var(--stone);
+  margin-top: .2rem;
+  display: block;
+}
+.rec-header-actions {
+  display: flex;
+  gap: .5rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.rec-header-actions button {
+  font-family: var(--f-ui);
+  font-size: .42rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: .35rem .75rem;
+  border: 1px solid var(--maroon);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--maroon);
+  cursor: pointer;
+  transition: all .2s;
+}
+.rec-header-actions button:hover { background: var(--maroon); color: var(--vellum); }
+.rec-close {
+  font-size: 1.3rem !important;
+  padding: .15rem .5rem !important;
+  border: none !important;
+  color: var(--maroon) !important;
+  background: transparent !important;
+  letter-spacing: 0 !important;
+}
+.rec-close:hover { background: rgba(123,29,42,.08) !important; }
+
+.rec-body {
+  display: grid;
+  grid-template-columns: 58% 1fr;
+  gap: 2.5rem;
+  padding: 1.5rem 2.5rem 1.5rem 2rem;
+  flex: 1;
+}
+.rec-body-left, .rec-body-right { min-width: 0; }
+.rec-section-label {
+  font-family: var(--f-ui);
+  font-size: .5rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--maroon);
+  padding-bottom: .3rem;
+  border-bottom: 1px solid var(--maroon);
+  margin-bottom: .75rem;
+  margin-top: 1.5rem;
+}
+.rec-section-label:first-child { margin-top: 0; }
+.rec-field {
+  margin-bottom: .5rem;
+}
+.rec-field-label {
+  font-family: var(--f-ui);
+  font-size: .4rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--stone);
+  display: block;
+  margin-bottom: .1rem;
+}
+.rec-field-value { font-family: var(--f-body); font-size: 1.05rem; line-height: 1.35; }
+.rec-field input,
+.rec-field select,
+.rec-field textarea {
+  font-family: var(--f-data);
+  font-size: .95rem;
+  padding: .35rem .6rem;
+  border: var(--rule-faint);
+  border-radius: 4px;
+  background: #fff;
+  width: 100%;
+  outline: none;
+}
+.rec-field input:focus,
+.rec-field select:focus { border-color: var(--maroon); }
+.rec-child-row { font-size: .92rem; padding: .25rem 0; border-bottom: var(--rule-hair); }
+.rec-their-notes {
+  font-style: italic;
+  color: var(--stone);
+  font-size: .92rem;
+  padding: .5rem;
+  background: rgba(122,102,72,.05);
+  border-radius: 4px;
+}
+.rec-admin-notice {
+  font-family: var(--f-ui);
+  font-size: .5rem;
+  color: var(--stone);
+  padding: .5rem;
+  background: rgba(184,131,40,.06);
+  border-radius: 4px;
+  margin-top: 1rem;
+}
+
+/* ── JOURNEY PROGRESS ── */
+.rec-journey-summary {
+  font-family: var(--f-ui);
+  font-size: .5rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--stone);
+  margin-bottom: .5rem;
+}
+.rec-progress-bar {
+  height: 6px;
+  background: var(--vellum-mid);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: .75rem;
+}
+.rec-progress-fill {
+  height: 100%;
+  background: var(--maroon);
+  border-radius: 3px;
+  transition: width .3s;
+}
+.rec-article {
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+  padding: .3rem 0;
+  border-bottom: var(--rule-hair);
+  font-size: .9rem;
+}
+.rec-article-check { color: var(--stone); flex-shrink: 0; width: 1.2rem; }
+.rec-article-done .rec-article-check { color: var(--verdigris); }
+.rec-article-title { flex: 1; }
+.rec-article-done .rec-article-title { color: var(--verdigris); }
+.rec-article-date {
+  font-size: .78rem;
+  color: var(--stone);
+  white-space: nowrap;
+}
+.rec-article-notes {
+  width: 100%;
+  font-style: italic;
+  color: var(--verdigris);
+  font-size: .82rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-top: .15rem;
+  padding-left: 1.7rem;
+}
+
+/* ── PRAYER RULE ── */
+.rec-prayer-rule {
+  font-family: var(--f-ui);
+  font-size: .48rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--stone);
+  padding: .5rem;
+  background: rgba(61,107,94,.06);
+  border-radius: 4px;
+  margin-top: .75rem;
+}
+
+/* ── PASTORAL NOTES (panel right column) ── */
+.pn-add {
+  margin-bottom: 1rem;
+}
+.pn-add textarea {
+  font-family: var(--f-data);
+  font-size: .95rem;
+  padding: .5rem .65rem;
+  border: var(--rule-faint);
+  border-radius: 4px;
+  background: #fff;
+  width: 100%;
+  outline: none;
+  resize: vertical;
+}
+.pn-add textarea:focus { border-color: var(--maroon); }
+.pn-add-footer {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin-top: .5rem;
+  flex-wrap: wrap;
+}
+.pn-add-footer label {
+  font-family: var(--f-ui);
+  font-size: .42rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--stone);
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+}
+.pn-add-footer input[type="date"] {
+  font-family: var(--f-data);
+  font-size: .85rem;
+  padding: .25rem .4rem;
+  border: var(--rule-faint);
+  border-radius: 4px;
+  outline: none;
+}
+.pn-add-footer input[type="date"]:focus { border-color: var(--maroon); }
+.pn-save-btn {
+  font-family: var(--f-ui);
+  font-size: .42rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: .35rem .85rem;
+  background: var(--maroon);
+  color: var(--vellum);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: auto;
+}
+.pn-save-btn:hover { background: var(--maroon-deep); }
+
+.pn-note {
+  padding: .65rem 0;
+  border-bottom: var(--rule-hair);
+}
+.pn-note-resolved { opacity: .6; }
+.pn-note-resolved .pn-note-text { color: var(--stone); }
+.pn-note-text { font-size: .92rem; margin-bottom: .25rem; }
+.pn-note-meta { font-size: .78rem; color: var(--stone); }
+.pn-followup-row {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-top: .3rem;
+}
+.pn-followup-date {
+  font-family: var(--f-ui);
+  font-size: .42rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.pn-overdue { color: var(--maroon) !important; font-weight: 600; }
+.pn-followup-row button {
+  font-family: var(--f-ui);
+  font-size: .38rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--verdigris);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: .15rem .4rem;
+}
+.pn-followup-row button:hover { text-decoration: underline; }
+.pn-resolved-label {
+  font-family: var(--f-ui);
+  font-size: .4rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--stone);
+  margin-top: .25rem;
+}
+.pn-confidential {
+  font-family: var(--f-ui);
+  font-size: .42rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--stone);
+  opacity: .6;
+  margin-top: 1.5rem;
+  line-height: 1.6;
+}
+
+/* ── RECORD FOOTER ── */
+.rec-footer {
+  padding: 1rem 2rem;
+  border-top: var(--rule-faint);
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+.rec-footer button {
+  font-family: var(--f-ui);
+  font-size: .42rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: .35rem .85rem;
+  border: 1px solid var(--stone);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--stone);
+  cursor: pointer;
+}
+.rec-footer button:hover { border-color: var(--maroon); color: var(--maroon); }
+.rec-delete-btn { border-color: #c0392b !important; color: #c0392b !important; }
+.rec-delete-btn:hover { background: #c0392b !important; color: #fff !important; }
+.rec-delete-confirm {
+  width: 100%;
+  background: rgba(192,57,43,.06);
+  border-radius: 4px;
+  padding: .75rem;
+  margin-top: .5rem;
+}
+.rec-delete-confirm p {
+  font-size: .88rem;
+  color: var(--ink);
+  margin-bottom: .75rem;
+  line-height: 1.5;
+}
+.rec-delete-confirm button {
+  margin-right: .5rem;
+}
+.rec-delete-final {
+  background: #c0392b !important;
+  color: #fff !important;
+  border-color: #c0392b !important;
+}
+
+/* ── ADD PARISHIONER PANEL ── */
+.add-panel-header {
+  padding: 1.5rem 2rem;
+  border-bottom: var(--rule-faint);
+}
+.add-panel-header h1 {
+  font-family: var(--f-display);
+  font-size: 1.75rem;
+  font-weight: 400;
+  color: var(--ink);
+  margin: 0;
+}
+.add-panel-header p {
+  font-style: italic;
+  color: var(--stone);
+  font-size: .95rem;
+  margin-top: .25rem;
+}
+.add-panel-close {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  font-size: 1.3rem;
+  background: none;
+  border: none;
+  color: var(--maroon);
+  cursor: pointer;
+  padding: .15rem .5rem;
+}
+.add-panel-body {
+  padding: 1.5rem 2rem;
+  flex: 1;
+  overflow-y: auto;
+}
+.add-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .75rem;
+  margin-bottom: .75rem;
+}
+.add-row.full { grid-template-columns: 1fr; }
+.add-field label {
+  display: block;
+  font-family: var(--f-ui);
+  font-size: .42rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--stone);
+  margin-bottom: .2rem;
+}
+.add-field input,
+.add-field select,
+.add-field textarea {
+  font-family: var(--f-data);
+  font-size: .95rem;
+  padding: .4rem .65rem;
+  border: var(--rule-faint);
+  border-radius: 4px;
+  background: #fff;
+  width: 100%;
+  outline: none;
+}
+.add-field input:focus,
+.add-field select:focus,
+.add-field textarea:focus { border-color: var(--maroon); }
+.add-field textarea { resize: vertical; }
+.add-status-pills {
+  display: flex;
+  gap: .4rem;
+  flex-wrap: wrap;
+}
+.add-status-pill {
+  font-family: var(--f-ui);
+  font-size: .42rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: .3rem .75rem;
+  border: 1px solid var(--stone);
+  border-radius: 15px;
+  background: transparent;
+  color: var(--stone);
+  cursor: pointer;
+}
+.add-status-pill.active { background: var(--maroon); color: var(--vellum); border-color: var(--maroon); }
+.add-children-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+  margin-top: .25rem;
+}
+.add-children-inputs input {
+  font-family: var(--f-data);
+  font-size: .92rem;
+  padding: .35rem .6rem;
+  border: var(--rule-faint);
+  border-radius: 4px;
+  background: #fff;
+  outline: none;
+}
+.edit-child-row {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  margin-bottom: .35rem;
+}
+.edit-child-row input {
+  font-family: var(--f-data);
+  font-size: .9rem;
+  padding: .3rem .55rem;
+  border: var(--rule-faint);
+  border-radius: 4px;
+  background: #fff;
+  outline: none;
+  min-width: 0;
+}
+.edit-child-row input:focus { border-color: var(--maroon); }
+.add-panel-footer {
+  padding: 1rem 2rem;
+  border-top: var(--rule-faint);
+  display: flex;
+  gap: .75rem;
+}
+.add-panel-footer button {
+  font-family: var(--f-ui);
+  font-size: .45rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: .55rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+}
+.add-save-btn { background: var(--maroon); color: var(--vellum); }
+.add-save-btn:hover { background: var(--maroon-deep); }
+.add-cancel-btn { background: transparent; color: var(--stone); border: 1px solid var(--stone) !important; }
+.add-cancel-btn:hover { color: var(--maroon); border-color: var(--maroon) !important; }
+
+/* ── GITHUB TOKEN MODAL ── */
+.gh-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(21,8,4,.5);
+  z-index: 1100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.gh-modal.open { display: flex; }
+.gh-modal-inner {
+  background: var(--vellum);
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 420px;
+  width: 90vw;
+  text-align: center;
+}
+.gh-modal-inner h3 {
+  font-family: var(--f-ui);
+  font-size: .6rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--maroon);
+  margin-bottom: .5rem;
+}
+.gh-modal-inner p {
+  font-size: .88rem;
+  color: var(--stone);
+  margin-bottom: 1rem;
+}
+.gh-modal-inner input {
+  font-family: var(--f-data);
+  font-size: .95rem;
+  padding: .5rem .75rem;
+  border: var(--rule-faint);
+  border-radius: 4px;
+  background: #fff;
+  width: 100%;
+  outline: none;
+  margin-bottom: .75rem;
+}
+.gh-modal-inner input:focus { border-color: var(--maroon); }
+.gh-modal-inner button {
+  font-family: var(--f-ui);
+  font-size: .45rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: .5rem 1.5rem;
+  background: var(--maroon);
+  color: var(--vellum);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.gh-modal-inner button:hover { background: var(--maroon-deep); }
+
+/* ── TOAST ── */
+#admin-toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(1rem);
+  font-family: var(--f-ui);
+  font-size: .5rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  background: var(--verdigris);
+  color: var(--vellum);
+  padding: .65rem 1.5rem;
+  border-radius: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s, transform .3s;
+  z-index: 1200;
+  white-space: nowrap;
+}
+#admin-toast.toast-show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── MOBILE ── */
+@media (max-width: 768px) {
+  .greeting-header { flex-direction: column; align-items: flex-start; gap: 1rem; padding: 1.25rem; }
+  .greeting-right { align-items: flex-start; }
+  .dash-attention { padding: .6rem 1rem; }
+  .dash-main { padding: 1rem; }
+  .tab-bar { overflow-x: auto; }
+  .prayer-section { grid-template-columns: 1fr; }
+  .slide-panel { width: 100vw; }
+  .rec-header {
+    padding: 1rem;
+    position: relative;
+  }
+  .rec-close {
+    position: absolute !important;
+    top: .75rem !important;
+    right: .75rem !important;
+  }
+  .rec-header-actions {
+    gap: .35rem;
+  }
+  .rec-body {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+    gap: 1.5rem;
+  }
+  .rec-footer { padding: .75rem 1rem; }
+  .add-panel-body { padding: 1rem; }
+  .add-panel-header { padding: 1rem; }
+  .add-row { grid-template-columns: 1fr; }
+  /* Toast */
+  #admin-toast { bottom: 5rem; }
+  /* Child edit rows stack on mobile */
+  .edit-child-row {
+    flex-wrap: wrap;
+    padding-bottom: .5rem;
+    border-bottom: var(--rule-hair);
+    margin-bottom: .5rem;
+  }
+  /* name (1st) and godparent (4th) go full width */
+  .edit-child-row input:nth-child(1),
+  .edit-child-row input:nth-child(4) { flex: 1 1 100% !important; }
+  /* dob (2nd) and baptism (3rd) share a row */
+  .edit-child-row input:nth-child(2),
+  .edit-child-row input:nth-child(3) { flex: 1 1 calc(50% - .2rem) !important; }
+}
+
+/* ── INTER: data text, buttons, labels ── */
+/* Switch all functional small-text UI from Cinzel to Inter for readability */
+.login-sent,
+.notif-card-label,
+.notif-card-date,
+.notif-empty,
+.p-card-family,
+.p-card-note,
+.p-card-meta,
+.p-card-badge,
+.p-card-followup,
+.p-empty,
+.pr-card-text,
+.pr-card-date,
+.pr-card-actions button,
+.pr-archive-link,
+.pl-entry,
+.pl-add-row button,
+.pl-note,
+.pl-bulletin-title,
+.pl-bulletin-actions a,
+.pl-event-date,
+.pl-event-title,
+.pl-event-sub,
+.pl-event-row a,
+.pl-event-footer button,
+.pl-event-footer a,
+.co-row,
+.co-type,
+.co-date,
+.co-row button,
+.quick-links a,
+.event-form-panel label,
+.event-form-actions button,
+.rec-field-label,
+.rec-family,
+.rec-child-row,
+.rec-their-notes,
+.rec-admin-notice,
+.rec-journey-summary,
+.rec-article,
+.rec-article-date,
+.rec-article-notes,
+.rec-prayer-rule,
+.rec-header-actions button,
+.rec-footer button,
+.pn-note-text,
+.pn-note-meta,
+.pn-add-footer label,
+.pn-followup-date,
+.pn-followup-row button,
+.pn-resolved-label,
+.pn-confidential,
+.pn-save-btn,
+.add-field label,
+.add-panel-footer button,
+.gh-modal-inner p,
+.gh-modal-inner button,
+#admin-toast {
+  font-family: var(--f-data);
+}
+/* Readable minimum sizes for labels and small text */
+.notif-card-label        { font-size: 11px; letter-spacing: .02em; }
+.notif-card-date         { font-size: 12px; }
+.p-card-badge            { font-size: 10px; letter-spacing: .02em; padding: .2rem .6rem; }
+.p-card-meta             { font-size: 11px; letter-spacing: .01em; }
+.p-card-family           { font-size: 13px; }
+.p-card-note             { font-size: 13px; }
+.pr-card-actions button  { font-size: 11px; letter-spacing: .02em; }
+.pr-archive-link         { font-size: 12px; letter-spacing: .02em; }
+.pl-add-row button       { font-size: 12px; letter-spacing: .02em; }
+.pl-note                 { font-size: 12px; letter-spacing: .01em; }
+.pl-bulletin-actions a   { font-size: 12px; letter-spacing: .02em; }
+.pl-event-date           { font-size: 11px; letter-spacing: .04em; }
+.pl-event-row a          { font-size: 11px; letter-spacing: .02em; }
+.pl-event-footer button  { font-size: 12px; letter-spacing: .02em; }
+.pl-event-footer a       { font-size: 12px; letter-spacing: .02em; }
+.co-type                 { font-size: 11px; letter-spacing: .02em; }
+.co-row button           { font-size: 11px; letter-spacing: .01em; }
+.quick-links a           { font-size: 13px; letter-spacing: .01em; }
+.event-form-panel label  { font-size: 11px; letter-spacing: .03em; }
+.event-form-actions button { font-size: 11px; letter-spacing: .02em; }
+.rec-field-label         { font-size: 11px; letter-spacing: .03em; }
+.rec-admin-notice        { font-size: 13px; letter-spacing: .01em; }
+.rec-journey-summary     { font-size: 12px; letter-spacing: .01em; }
+.rec-prayer-rule         { font-size: 12px; letter-spacing: .01em; }
+.rec-header-actions button { font-size: 11px; letter-spacing: .02em; }
+.rec-footer button       { font-size: 11px; letter-spacing: .02em; }
+.pn-add-footer label     { font-size: 11px; letter-spacing: .02em; }
+.pn-followup-date        { font-size: 11px; letter-spacing: .02em; }
+.pn-followup-row button  { font-size: 11px; letter-spacing: .01em; }
+.pn-resolved-label       { font-size: 11px; letter-spacing: .02em; }
+.pn-confidential         { font-size: 12px; letter-spacing: .01em; }
+.pn-save-btn             { font-size: 12px; letter-spacing: .02em; }
+.add-field label         { font-size: 11px; letter-spacing: .03em; }
+.add-panel-footer button { font-size: 12px; letter-spacing: .02em; }
+.gh-modal-inner button   { font-size: 12px; letter-spacing: .02em; }
+#admin-toast             { font-size: 12px; letter-spacing: .04em; }
+/* Fix Cinzel section kicker to minimum readable size */
+.section-kicker          { font-size: max(.58rem, 10px); }
+
+/* ── EB GARAMOND: all body / content text ── */
+/* Labels (Cinzel), buttons (Inter), inputs (Inter) stay as-is */
+.p-card-sub,
+.p-card-note,
+.p-card-family,
+.p-empty,
+.pr2-name,
+.pr2-text,
+.pr2-submitted,
+.pr2-acked-date,
+.pl-entry,
+.pl-event-title,
+.pl-event-sub,
+.drawer-value-sm,
+.drawer-note-entry,
+.pn-note-text,
+.pn-note-meta,
+.rec-family,
+.rec-their-notes,
+.rec-child-row,
+.rec-article-title,
+.rec-article-notes,
+.pr-card-text,
+.pr-card-date,
+.pl-bulletin-title,
+.tools-row-sub,
+.co-page,
+.notif-card-name,
+.pl-intercession-empty,
+.recent-edits-empty,
+.bulletin-hero-title,
+.greeting-liturgical {
+  font-family: var(--f-body);
+}
+/* Bump sizes for EB Garamond — it reads slightly smaller than Inter at same px */
+.p-card-sub       { font-size: .88rem; }
+.pr2-text         { font-size: .95rem; }
+.pr2-name         { font-size: 1.08rem; }
+.pl-event-title   { font-size: 1rem; }
+.pl-event-sub     { font-size: .92rem; }
+.drawer-value-sm  { font-size: .9rem; }
+.tools-row-sub    { font-size: .82rem; }
+
+/* ── EDIT MODE SAVE BTN ── */
+.rec-save-btn {
+  font-family: var(--f-data);
+  font-size: 12px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  padding: .5rem 1.5rem;
+  background: var(--maroon);
+  color: var(--vellum);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+.rec-save-btn:hover { background: var(--maroon-deep); }
+
+/* ── TOOLTIPS ── */
+[data-tip] { position: relative; }
+[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%) translateY(3px);
+  background: var(--vellum);
+  color: var(--ink);
+  font-family: var(--f-data);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: .01em;
+  text-transform: none;
+  white-space: normal;
+  max-width: 180px;
+  text-align: center;
+  padding: .3rem .55rem;
+  border-radius: 4px;
+  border: 1px solid rgba(123,29,42,.18);
+  box-shadow: 0 2px 10px rgba(0,0,0,.12);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .12s ease, transform .12s ease;
+  z-index: 9999;
+}
+[data-tip]:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+[data-tip]::before {
+  content: '';
+  position: absolute;
+  bottom: calc(100% + 1px);
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: rgba(123,29,42,.18);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .12s ease;
+  z-index: 9999;
+}
+[data-tip]:hover::before { opacity: 1; }
+[data-tip-below]::after {
+  bottom: auto;
+  top: calc(100% + 6px);
+  transform: translateX(-50%) translateY(-3px);
+}
+[data-tip-below]:hover::after { transform: translateX(-50%) translateY(0); }
+[data-tip-below]::before {
+  bottom: auto;
+  top: calc(100% + 1px);
+  border-top-color: transparent;
+  border-bottom-color: rgba(123,29,42,.18);
+}
+
+/* ── PRAYER: TWO-COLUMN LAYOUT ── */
+.prayer-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+.prayer-col-head {
+  font-family: var(--f-ui);
+  font-size: max(.55rem, 10px);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--stone);
+  display: block;
+  margin-bottom: 1rem;
+  padding-bottom: .5rem;
+  border-bottom: 1px solid rgba(123,29,42,.1);
+}
+.pr2-card {
+  background: #fff;
+  border: var(--rule-faint);
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: .5rem;
+}
+.pr2-icon {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: 1.5px solid;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-size: .9rem;
+  margin-top: .1rem;
+}
+.pr2-icon-cross { border-color: rgba(123,29,42,.3); color: var(--maroon); }
+.pr2-icon-check { border-color: var(--verdigris); color: var(--verdigris); }
+.pr2-body { flex: 1; min-width: 0; }
+.pr2-name {
+  font-family: var(--f-display);
+  font-weight: 500;
+  font-size: 1.05rem;
+  color: var(--ink);
+  margin-bottom: .2rem;
+  line-height: 1.2;
+}
+.pr2-text {
+  font-family: var(--f-data);
+  font-size: .83rem;
+  color: var(--stone);
+  margin-bottom: .25rem;
+  line-height: 1.4;
+}
+.pr2-submitted { font-family: var(--f-data); font-size: .7rem; color: rgba(122,102,72,.6); }
+.pr2-acked-date { font-family: var(--f-data); font-size: .7rem; color: var(--verdigris); }
+.pr2-ack-btn {
+  font-family: var(--f-ui);
+  font-size: max(.52rem, 9px);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  padding: .38rem .85rem;
+  border: 1px solid rgba(123,29,42,.3);
+  background: transparent;
+  color: var(--maroon);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all .18s;
+  align-self: center;
+}
+.pr2-ack-btn:hover { background: var(--maroon); color: var(--vellum); border-color: var(--maroon); }
+.pr2-card-acked { opacity: .8; }
+.pr2-acked-btn {
+  width: 30px; height: 30px;
+  border: 1px solid rgba(61,107,94,.3);
+  background: transparent;
+  color: var(--verdigris);
+  border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  align-self: center;
+  font-size: .85rem;
+  cursor: default;
+}
+.prayer-list-lower {
+  margin-top: 2rem;
+  padding-top: 1.75rem;
+  border-top: 2px solid rgba(123,29,42,.08);
+}
+.pl-intercession-empty {
+  font-family: var(--f-body);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--stone);
+  padding: .5rem 0 .75rem;
+}
+.pl-entry-name {
+  font-family: var(--f-body);
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+@media (max-width: 768px) { .prayer-cols { grid-template-columns: 1fr; } }
+
+/* ── PARISH LIFE: BULLETIN SECTION HEAD ── */
+.bulletin-section-wrap { margin-bottom: 1.5rem; }
+.bulletin-section-head {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  margin-bottom: .9rem;
+}
+.bulletin-section-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--verdigris);
+  flex-shrink: 0;
+}
+.bulletin-section-label {
+  font-family: var(--f-ui);
+  font-size: max(.55rem, 10px);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--stone);
+}
+
+/* ── SITE TOOLS OVERHAUL ── */
+.tools-box {
+  background: #fff;
+  border: var(--rule-faint);
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.tools-box-head {
+  font-family: var(--f-ui);
+  font-size: max(.52rem, 9px);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--stone);
+  display: block;
+  padding-bottom: .65rem;
+  border-bottom: 1px solid rgba(123,29,42,.1);
+  margin-bottom: .85rem;
+}
+.tools-row {
+  display: flex;
+  align-items: center;
+  gap: .85rem;
+  padding: .55rem 0;
+  border-bottom: 1px solid rgba(123,29,42,.05);
+  text-decoration: none;
+  transition: background .15s;
+  cursor: pointer;
+  color: var(--ink);
+}
+.tools-row:last-child { border-bottom: none; }
+.tools-row:hover .tools-row-title { color: var(--maroon); }
+.tools-row-icon {
+  width: 32px; height: 32px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.tools-row-icon.cms  { background: rgba(123,29,42,.07);  color: var(--maroon); }
+.tools-row-icon.cal  { background: rgba(184,131,40,.1);  color: var(--gold); }
+.tools-row-icon.bull { background: rgba(61,107,94,.08);  color: var(--verdigris); }
+.tools-row-icon.give { background: rgba(184,131,40,.08); color: var(--gold); }
+.tools-row-title {
+  font-family: var(--f-data);
+  font-size: .88rem;
+  font-weight: 500;
+  color: var(--ink);
+  display: block;
+  line-height: 1.2;
+  transition: color .15s;
+}
+.tools-row-sub {
+  font-family: var(--f-data);
+  font-size: .72rem;
+  color: var(--stone);
+  display: block;
+  margin-top: .05rem;
+}
+.recent-edits-empty {
+  font-family: var(--f-display);
+  font-style: italic;
+  font-size: .95rem;
+  color: var(--stone);
+  padding: .25rem 0;
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/"><img src="/images/logo/logo-2026.svg" alt="Saints Peter &amp; Paul Orthodox Cathedral" class="nav-logo-img" onerror="this.style.display='none'"></a>
+    <div class="nav-mega-group" id="nav-mega-group">
+      <ul class="nav-links">
+        <li data-mega="mega-about"><a href="#">About Us</a></li>
+        <li data-mega="mega-inquirers"><a href="#">Inquirers</a></li>
+        <li data-mega="mega-calendar"><a href="#">Calendar</a></li>
+        <li data-mega="mega-parish"><a href="#">Parish Life</a></li>
+        <li data-mega="mega-worship"><a href="#">Worship</a></li>
+      </ul>
+      <div class="mega-panel" id="mega-about"><div class="mega-photo"><div class="mega-photo-bg" style="background-image:url('/images/nav/nav-about-us.jpg')"></div><div class="mega-photo-overlay"></div><div class="mega-photo-content"><span class="mega-photo-label">About Us</span><p class="mega-photo-quote">A century of faith on Grand Street.</p></div></div><div class="mega-content"><div class="mega-inner" style="grid-template-columns:repeat(2,1fr)"><div class="mega-col"><span class="mega-col-head">Who We Are</span><a href="/our-parish" class="mega-link">Our Parish</a><span class="mega-sub">Our history, our people, our home</span><a href="/church-history" class="mega-link">Church History</a><span class="mega-sub">A century of faith in Jersey City</span><a href="/our-beliefs" class="mega-link">Our Beliefs</a><span class="mega-sub">What we confess and why it matters</span></div><div class="mega-col"><span class="mega-col-head">Leadership</span><a href="/administration" class="mega-link">Administration</a><span class="mega-sub">Staff and parish leadership</span><a href="/council" class="mega-link">Parish Council</a><span class="mega-sub">The elected lay leadership</span></div></div></div></div>
+      <div class="mega-panel" id="mega-inquirers"><div class="mega-photo"><div class="mega-photo-bg" style="background-image:url('/images/nav/nav-inquirers.jpg')"></div><div class="mega-photo-overlay"></div><div class="mega-photo-content"><span class="mega-photo-label">Inquirers</span><p class="mega-photo-quote">Exploring the ancient Faith?</p></div></div><div class="mega-content"><div class="mega-inner" style="grid-template-columns:repeat(2,1fr)"><div class="mega-col"><span class="mega-col-head">Learning the Faith</span><a href="/about-orthodoxy" class="mega-link">About Orthodoxy</a><span class="mega-sub">The ancient Christian faith</span><a href="/catechesis" class="mega-link">Catechesis Series</a><span class="mega-sub">Recorded talks and study materials</span></div><div class="mega-col"><span class="mega-col-head">Come Visit</span><a href="/visit" class="mega-link">Visitor Guide</a><span class="mega-sub">Everything you need before you arrive</span><a href="/contact-us" class="mega-link">Contact Us</a><span class="mega-sub">Reach Fr. Solomon</span></div></div></div></div>
+      <div class="mega-panel" id="mega-calendar"><div class="mega-photo"><div class="mega-photo-bg" style="background-image:url('/images/nav/nav-calendar.jpg')"></div><div class="mega-photo-overlay"></div><div class="mega-photo-content"><span class="mega-photo-label">Calendar</span><p class="mega-photo-quote">The rhythm of the Church's year.</p></div></div><div class="mega-content"><div class="mega-inner" style="grid-template-columns:repeat(2,1fr)"><div class="mega-col"><span class="mega-col-head">Services</span><a href="/divine-liturgy" class="mega-link">Divine Liturgy</a><span class="mega-sub">Every Sunday &middot; 9:30 AM</span><a href="/vespers" class="mega-link">Great Vespers</a><span class="mega-sub">Every Saturday &middot; 5:00 PM</span></div><div class="mega-col"><span class="mega-col-head">Daily</span><a href="/readings" class="mega-link">Daily Readings</a><span class="mega-sub">Scripture appointed for each day</span><a href="/saints" class="mega-link">Saints of the Day</a><span class="mega-sub">Lives of those commemorated today</span></div></div></div></div>
+      <div class="mega-panel" id="mega-parish"><div class="mega-photo"><div class="mega-photo-bg" style="background-image:url('/images/nav/nav-parish-life.jpg')"></div><div class="mega-photo-overlay"></div><div class="mega-photo-content"><span class="mega-photo-label">Parish Life</span><p class="mega-photo-quote">A family that shares a life.</p></div></div><div class="mega-content"><div class="mega-inner" style="grid-template-columns:repeat(2,1fr)"><div class="mega-col"><span class="mega-col-head">News &amp; Publications</span><a href="/news" class="mega-link">News &amp; Announcements</a><span class="mega-sub">What's happening at the parish</span><a href="/bulletins" class="mega-link">Parish Bulletins</a><span class="mega-sub">Weekly reflections from Fr. Solomon</span></div><div class="mega-col"><span class="mega-col-head">Community</span><a href="/gallery" class="mega-link">Gallery</a><span class="mega-sub">Photos from parish life</span><a href="/give" class="mega-link">Give &amp; Support</a><span class="mega-sub">Projects and stewardship</span></div></div></div></div>
+      <div class="mega-panel" id="mega-worship"><div class="mega-photo"><div class="mega-photo-bg" style="background-image:url('/images/nav/nav-worship.jpg')"></div><div class="mega-photo-overlay"></div><div class="mega-photo-content"><span class="mega-photo-label">Worship</span><p class="mega-photo-quote">The living tradition of the Church.</p></div></div><div class="mega-content"><div class="mega-inner" style="grid-template-columns:repeat(2,1fr)"><div class="mega-col"><span class="mega-col-head">Service Guides</span><a href="/divine-liturgy" class="mega-link">About the Divine Liturgy</a><span class="mega-sub">History, structure, and meaning</span></div><div class="mega-col"><span class="mega-col-head">Follow Along</span><a href="/liturgy-book" class="mega-link">Liturgy Book</a><span class="mega-sub">Full text for the Divine Liturgy</span><a href="/prayers" class="mega-link">Daily Prayers</a><span class="mega-sub">The daily prayer rule</span></div></div></div></div>
+    </div>
+    <div class="nav-my-parish" id="nav-my-parish">
+      <button class="nav-my-parish-btn" onclick="toggleMyParish(event)" aria-label="My Parish"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M4 20c0-3.5 3.6-6 8-6s8 2.5 8 6"/></svg></button>
+      <div class="nav-my-parish-panel" id="nav-mp-panel">
+        <a href="/my-profile" class="nav-mp-link"><span class="nav-mp-link-name">My Profile</span><span class="nav-mp-link-sub">Help Fr. Solomon know your family</span></a>
+        <a href="/my-journey" class="nav-mp-link"><span class="nav-mp-link-name">Explore</span><span class="nav-mp-link-sub">The ancient Orthodox Faith</span></a>
+      </div>
+    </div>
+    <a href="/give" class="nav-give">Give</a>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" onclick="openDrawer()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav-drawer-overlay" id="nav-overlay" onclick="closeDrawer()"></div>
+<div class="nav-drawer" id="nav-drawer">
+  <div class="nav-drawer-head">
+    <div class="nav-drawer-logo"><img src="/images/logo/logo-2026.svg" alt="" style="height:38px;width:auto;display:block;filter:brightness(0) invert(1);opacity:.9" onerror="this.style.display='none'"></div>
+    <button class="nav-drawer-close" onclick="closeDrawer()">&#x2715;</button>
+  </div>
+  <div class="dr-accordion" id="dr-accordion">
+    <div class="dr-section"><div class="dr-section-head" onclick="drToggle(this)"><span class="dr-section-name">About Us</span><span class="dr-section-toggle">+</span></div><div class="dr-section-links"><a href="/our-parish" class="dr-link"><span class="dr-link-name">Our Parish</span></a><a href="/church-history" class="dr-link"><span class="dr-link-name">Church History</span></a><a href="/our-beliefs" class="dr-link"><span class="dr-link-name">Our Beliefs</span></a></div></div>
+    <div class="dr-section"><div class="dr-section-head" onclick="drToggle(this)"><span class="dr-section-name">Inquirers</span><span class="dr-section-toggle">+</span></div><div class="dr-section-links"><a href="/about-orthodoxy" class="dr-link"><span class="dr-link-name">About Orthodoxy</span></a><a href="/catechesis" class="dr-link"><span class="dr-link-name">Catechesis</span></a><a href="/visit" class="dr-link"><span class="dr-link-name">Visitor Guide</span></a></div></div>
+    <div class="dr-section"><div class="dr-section-head" onclick="drToggle(this)"><span class="dr-section-name">Calendar</span><span class="dr-section-toggle">+</span></div><div class="dr-section-links"><a href="/schedule" class="dr-link"><span class="dr-link-name">Full Calendar</span></a><a href="/saints" class="dr-link"><span class="dr-link-name">Saints of the Day</span></a></div></div>
+    <div class="dr-section"><div class="dr-section-head" onclick="drToggle(this)"><span class="dr-section-name">Parish Life</span><span class="dr-section-toggle">+</span></div><div class="dr-section-links"><a href="/news" class="dr-link"><span class="dr-link-name">News</span></a><a href="/bulletins" class="dr-link"><span class="dr-link-name">Bulletins</span></a></div></div>
+    <div class="dr-section"><div class="dr-section-head" onclick="drToggle(this)"><span class="dr-section-name">Worship</span><span class="dr-section-toggle">+</span></div><div class="dr-section-links"><a href="/liturgy-book" class="dr-link"><span class="dr-link-name">Liturgy Book</span></a><a href="/prayers" class="dr-link"><span class="dr-link-name">Daily Prayers</span></a></div></div>
+  </div>
+  <a href="https://tithe.ly/give?c=5004259" target="_blank" class="nav-drawer-give">Give Online</a>
+</div>
+
+<!-- ── LOGIN SCREEN ── -->
+<div id="login-screen" class="login-screen" style="display:none">
+  <div class="login-card">
+    <img src="/images/logo/logo-2026.svg" alt="Saints Peter &amp; Paul" class="login-logo" style="height:52px;width:auto;margin:0 auto 1.25rem;display:block" onerror="this.style.display='none'">
+    <div style="font-family:var(--f-ui);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--maroon);margin-bottom:.35rem">Parish Administration</div>
+    <div style="font-family:var(--f-display);font-style:italic;font-size:1.05rem;color:var(--stone);margin-bottom:1.75rem">Sign in with your parish email</div>
+    <input type="email" id="login-email" class="login-input" placeholder="Enter your email" onkeydown="if(event.key==='Enter')handleLogin()">
+    <div id="login-action">
+      <button class="login-btn" onclick="handleLogin()">Send Sign-in Link</button>
+    </div>
+    <div id="login-status" class="login-sent"></div>
+  </div>
+</div>
+
+<!-- ── DASHBOARD (hidden until auth) ── -->
+<div id="dashboard-wrap" style="display:none">
+
+  <!-- Greeting Header -->
+  <div class="greeting-header">
+    <div class="greeting-left">
+      <div class="greeting-avatar">SL</div>
+      <div class="greeting-text">
+        <h1 id="greeting-text">Good morning, Father</h1>
+        <div class="greeting-liturgical" id="greeting-liturgical">Parish Dashboard</div>
+      </div>
+    </div>
+    <div class="greeting-right">
+      <div class="greeting-right-top">
+        <!-- Notification Bell -->
+        <div class="notif-wrap" id="notif-wrap">
+          <button class="notif-bell" id="notif-bell" onclick="toggleNotifDropdown()" aria-label="Notifications" data-tip="View recent alerts and prayer requests" data-tip-below>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            <span class="notif-count" id="notif-count" style="display:none">0</span>
+          </button>
+          <div class="notif-dropdown" id="notif-dropdown">
+            <div class="notif-dropdown-header"><span>Notifications</span></div>
+            <div id="notif-list"></div>
+          </div>
+        </div>
+        <button class="sign-out-btn" onclick="signOut()" data-tip="Sign out of the parish dashboard" data-tip-below>Sign Out</button>
+      </div>
+      <span class="greeting-date" id="greeting-date"></span>
+      <span style="font-family:var(--f-data);font-size:.78rem;color:var(--stone);display:none" id="dash-user-email"></span>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div id="dash-main" class="dash-main">
+
+    <!-- TAB BAR -->
+    <div class="tab-bar" id="tabBar">
+      <button class="tab-btn active" data-tab="flock" onclick="switchTab('flock')">My Flock <span class="tab-badge" id="flock-badge"></span></button>
+      <button class="tab-btn" data-tab="prayer" onclick="switchTab('prayer')">Prayer List <span class="tab-badge" id="prayer-badge"></span></button>
+      <button class="tab-btn" data-tab="parish" onclick="switchTab('parish')">Parish Life</button>
+      <div class="tab-indicator" id="tabIndicator"></div>
+    </div>
+
+    <!-- PANE 1: My Flock -->
+    <div class="tab-pane pane-flock active" id="pane-flock">
+      <input type="text" id="flock-search" class="flock-search" placeholder="Search by name...">
+      <div class="flock-filters">
+        <button class="flock-pill active" data-filter="all" data-tip="Show everyone in your flock">All</button>
+        <button class="flock-pill" data-filter="followup" data-tip="Show parishioners with a pending follow-up note">Needs Follow-up</button>
+        <button class="flock-pill" data-filter="inquirer" data-tip="People exploring Orthodoxy who have not yet begun formal catechesis">Inquirers</button>
+        <button class="flock-pill" data-filter="catechumen" data-tip="Those formally received as catechumens, preparing for baptism or chrismation">Catechumens</button>
+        <button class="flock-pill" data-filter="member" data-tip="Baptized, chrismated members of the parish">Members</button>
+        <button class="flock-pill" data-filter="admin-created" data-tip="Records you added manually — not self-registered by the parishioner">Admin-Created</button>
+        <button class="flock-pill" data-filter="archived" data-tip="Transferred or reposed parishioners — kept for records, removed from active view">Archived</button>
+        <button class="flock-add-btn" onclick="openAddPanel()" data-tip="Create a new parishioner record manually">+ Add Parishioner</button>
+      </div>
+      <div id="p-card-list" class="p-card-list"></div>
+    </div>
+
+    <!-- PANE 2: Prayer List -->
+    <div class="tab-pane pane-prayer" id="pane-prayer">
+      <!-- Two-column: New Requests | Acknowledged -->
+      <div class="prayer-cols">
+        <div>
+          <span class="prayer-col-head">New Requests</span>
+          <div id="prayer-requests"></div>
+        </div>
+        <div>
+          <span class="prayer-col-head">Acknowledged</span>
+          <div id="prayer-archived"></div>
+        </div>
+      </div>
+      <!-- Published Intercession List -->
+      <div class="prayer-list-lower">
+        <span class="prayer-col-head" style="margin-bottom:.85rem">Published Intercession List</span>
+        <div id="prayer-list-entries"></div>
+        <div class="pl-add-row">
+          <input id="pl-new-name" placeholder="Add a name..." onkeydown="if(event.key==='Enter')addNameToList()">
+          <button onclick="addNameToList()" data-tip="Add this name to the published intercession list on the website">Add</button>
+        </div>
+        <div class="pl-note">Changes publish immediately to the site.</div>
+      </div>
+    </div>
+
+    <!-- PANE 3: Parish Life -->
+    <div class="tab-pane pane-parish" id="pane-parish">
+
+      <!-- LEFT: Main content -->
+      <div class="parish-main">
+
+        <!-- Bulletin Hero -->
+        <div class="bulletin-section-wrap">
+          <div class="bulletin-section-head">
+            <span class="bulletin-section-dot"></span>
+            <span class="bulletin-section-label">Current Bulletin</span>
+          </div>
+          <div id="bulletin-card">
+            <div style="background:#fff;border:var(--rule-faint);padding:1.5rem 1.75rem">
+              <div class="skeleton-block" style="width:68%;height:15px;border-radius:3px;margin-bottom:.65rem"></div>
+              <div class="skeleton-block" style="width:43%;height:12px;border-radius:3px;margin-bottom:1.1rem"></div>
+              <div style="display:flex;gap:.6rem">
+                <div class="skeleton-block" style="width:108px;height:30px;border-radius:3px"></div>
+                <div class="skeleton-block" style="width:130px;height:30px;border-radius:3px"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Events -->
+        <div>
+          <div class="parish-events-header">
+            <span class="section-kicker" style="margin:0;font-size:max(.55rem,10px)">Upcoming Services &amp; Events</span>
+            <div class="pl-event-footer" style="margin:0">
+              <button onclick="openAddEvent()" data-tip="Add a new event to the parish calendar — it will appear on the website immediately">+ Add Event</button>
+              <a href="https://peterandpaulcathedral.com/admin/#/collections/parish-events" target="_blank" data-tip="Open the full content management system to edit all events">Manage in Decap</a>
+            </div>
+          </div>
+          <div id="events-list">
+            <div class="skeleton-block" style="height:56px;margin-bottom:4px;border-radius:3px"></div>
+            <div class="skeleton-block" style="height:56px;margin-bottom:4px;border-radius:3px;opacity:.7"></div>
+            <div class="skeleton-block" style="height:56px;border-radius:3px;opacity:.45"></div>
+          </div>
+          <div id="event-form-container"></div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: Site Tools Sidebar -->
+      <div class="site-tools-sidebar">
+
+        <!-- Site Tools -->
+        <div class="tools-box">
+          <span class="tools-box-head">Site Tools</span>
+
+          <a href="/admin" target="_blank" class="tools-row" data-tip="Open the full Decap CMS to edit any page on the site">
+            <div class="tools-row-icon cms">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            </div>
+            <div>
+              <span class="tools-row-title">CMS Admin</span>
+              <span class="tools-row-sub">Decap content editor</span>
+            </div>
+          </a>
+
+          <a href="/schedule" target="_blank" class="tools-row" data-tip="View the public liturgical calendar">
+            <div class="tools-row-icon cal">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+            <div>
+              <span class="tools-row-title">Schedule</span>
+              <span class="tools-row-sub">Liturgical calendar</span>
+            </div>
+          </a>
+
+          <a href="/bulletins" target="_blank" class="tools-row" data-tip="View all bulletins — archive and print view">
+            <div class="tools-row-icon bull">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div>
+              <span class="tools-row-title">All Bulletins</span>
+              <span class="tools-row-sub">Archive &amp; print view</span>
+            </div>
+          </a>
+
+          <a href="/give" target="_blank" class="tools-row" data-tip="View the giving and donations page">
+            <div class="tools-row-icon give">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+            <div>
+              <span class="tools-row-title">Giving</span>
+              <span class="tools-row-sub">Donations &amp; projects</span>
+            </div>
+          </a>
+        </div>
+
+        <!-- Recent Content Edits -->
+        <div class="tools-box">
+          <span class="tools-box-head">Recent Content Edits</span>
+          <div id="overrides-list"></div>
+        </div>
+
+      </div><!-- /site-tools-sidebar -->
+
+    </div><!-- /pane-parish -->
+
+  </div><!-- /dash-main -->
+
+</div>
+
+<!-- ── PANEL OVERLAY ── -->
+<div id="panel-overlay" class="panel-overlay" onclick="closeAllPanels()"></div>
+
+<!-- ── RECORD PANEL ── -->
+<div id="record-panel" class="slide-panel"></div>
+
+<!-- ── ADD PARISHIONER PANEL ── -->
+<div id="add-panel" class="slide-panel"></div>
+
+<!-- ── GITHUB TOKEN MODAL ── -->
+<div id="gh-modal" class="gh-modal">
+  <div class="gh-modal-inner">
+    <h3>GitHub Token Required</h3>
+    <p>Enter your personal access token to save changes. This is stored only for this session.</p>
+    <input type="password" id="gh-token-input" placeholder="ghp_..." onkeydown="if(event.key==='Enter')saveGhToken()">
+    <div style="display:flex;gap:.5rem;justify-content:center;margin-top:.25rem">
+      <button onclick="saveGhToken()">Save Token</button>
+      <button onclick="document.getElementById('gh-modal').classList.remove('open');ghPendingCallback=null;" style="background:transparent;color:var(--stone);border:1px solid var(--stone)">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/*
+── SQL TO RUN IN SUPABASE BEFORE DEPLOYING ──
+
+CREATE TABLE IF NOT EXISTS pastoral_notes (
+  id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  parishioner_id bigint REFERENCES parishioners(id) ON DELETE CASCADE,
+  note_text text NOT NULL,
+  follow_up_date date,
+  resolved boolean DEFAULT false,
+  written_by uuid REFERENCES auth.users(id),
+  written_at timestamptz DEFAULT now()
+);
+ALTER TABLE pastoral_notes ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Admin only" ON pastoral_notes FOR ALL
+  USING (EXISTS (SELECT 1 FROM site_admins WHERE user_id = auth.uid()));
+
+CREATE TABLE IF NOT EXISTS prayer_requests (
+  id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  submitted_by uuid REFERENCES auth.users(id),
+  submitter_name text,
+  request_text text NOT NULL,
+  acknowledged boolean DEFAULT false,
+  acknowledged_by uuid REFERENCES auth.users(id),
+  acknowledged_at timestamptz,
+  submitted_at timestamptz DEFAULT now()
+);
+ALTER TABLE prayer_requests ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Authenticated submit" ON prayer_requests FOR INSERT
+  WITH CHECK (auth.uid() IS NOT NULL);
+CREATE POLICY "Admin read" ON prayer_requests FOR SELECT
+  USING (EXISTS (SELECT 1 FROM site_admins WHERE user_id = auth.uid()));
+CREATE POLICY "Admin update" ON prayer_requests FOR UPDATE
+  USING (EXISTS (SELECT 1 FROM site_admins WHERE user_id = auth.uid()));
+
+CREATE TABLE IF NOT EXISTS family_units (
+  id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  family_name text NOT NULL,
+  created_at timestamptz DEFAULT now()
+);
+ALTER TABLE family_units ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Admin only" ON family_units FOR ALL
+  USING (EXISTS (SELECT 1 FROM site_admins WHERE user_id = auth.uid()));
+
+ALTER TABLE parishioners
+  ADD COLUMN IF NOT EXISTS admin_created boolean DEFAULT false,
+  ADD COLUMN IF NOT EXISTS status_detail text,
+  ADD COLUMN IF NOT EXISTS repose_date date,
+  ADD COLUMN IF NOT EXISTS transferred_date date,
+  ADD COLUMN IF NOT EXISTS family_unit_id bigint,
+  ADD COLUMN IF NOT EXISTS flagged boolean DEFAULT false,
+  ADD COLUMN IF NOT EXISTS created_at timestamptz DEFAULT now();
+*/
+
+// ── TAB SWITCHER ──
+function setGreeting() {
+  var hour = new Date().getHours();
+  var g = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  var el = document.getElementById('greeting-text');
+  if (el) el.textContent = g + ', Father';
+  var dateEl = document.getElementById('greeting-date');
+  if (dateEl) dateEl.textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+async function loadLiturgicalSubtitle() {
+  try {
+    var year = new Date().getFullYear();
+    var res = await fetch('/_data/calendar-' + year + '.json');
+    if (!res.ok) return;
+    var cal = await res.json();
+    var today = todayStr();
+    // cal.days is an object keyed by "YYYY-MM-DD"
+    var entry = cal.days && cal.days[today];
+    if (!entry) return;
+    var parts = [];
+    // Use first title, or feast field
+    var dayName = (entry.titles && entry.titles[0]) || entry.feast || '';
+    if (dayName) parts.push(dayName);
+    // Tone (skip if 0 — holy week has no tone)
+    if (entry.tone && entry.tone > 0) parts.push('Tone ' + entry.tone);
+    if (parts.length > 0) {
+      var el = document.getElementById('greeting-liturgical');
+      if (el) el.textContent = parts.join(' \u00B7 ');
+    }
+  } catch(e) { /* calendar unavailable — keep default subtitle */ }
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelectorAll('.tab-pane').forEach(function(p) { p.classList.remove('active'); });
+  var btn = document.querySelector('.tab-btn[data-tab="' + name + '"]');
+  var pane = document.getElementById('pane-' + name);
+  if (btn) { btn.classList.add('active'); updateIndicator(btn); }
+  if (pane) pane.classList.add('active');
+}
+
+function updateIndicator(btn) {
+  var ind = document.getElementById('tabIndicator');
+  if (!ind || !btn) return;
+  ind.style.left = btn.offsetLeft + 'px';
+  ind.style.width = btn.offsetWidth + 'px';
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+  var activeBtn = document.querySelector('.tab-btn.active');
+  if (activeBtn) {
+    var ind = document.getElementById('tabIndicator');
+    if (ind) { ind.style.transition = 'none'; updateIndicator(activeBtn); }
+    setTimeout(function() { if (ind) ind.style.transition = ''; }, 50);
+  }
+});
+window.addEventListener('resize', function() {
+  var activeBtn = document.querySelector('.tab-btn.active');
+  if (activeBtn) updateIndicator(activeBtn);
+});
+
+// ── GLOBALS ──
+var currentUser = null;
+var allParishioners = [];
+var allJourneyRows = [];
+var allPastoralNotes = [];
+var allPrayerRules = [];
+var allFamilyUnits = [];
+var allPrayerRequests = [];
+var prayerListData = { names: [] };
+var eventsData = [];
+var activeFilter = 'all';
+var searchTerm = '';
+var ghPendingCallback = null;
+
+var JOURNEY_PAGES = [
+  { key: 'about-orthodoxy',    title: 'About Orthodoxy' },
+  { key: 'our-beliefs',        title: 'Our Beliefs' },
+  { key: 'church-history',     title: 'Church History' },
+  { key: 'fasting',            title: 'Fasting' },
+  { key: 'catechesis-history', title: 'The Catechetical Tradition' },
+  { key: 'divine-liturgy',     title: 'The Divine Liturgy' },
+  { key: 'vespers',            title: 'Great Vespers' },
+  { key: 'liturgy-history',    title: 'History of the Liturgy' },
+  { key: 'our-parish',         title: 'Our Parish' },
+  { key: 'catechesis',         title: 'Catechesis' },
+  { key: 'bible-study',        title: 'Bible Study' }
+];
+
+// ── HELPERS ──
+function parseDate(d) {
+  if (!d) return null;
+  // Date-only strings (YYYY-MM-DD) parse as UTC; append time to treat as local
+  var s = String(d);
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) s += 'T12:00:00';
+  var dt = new Date(s);
+  return isNaN(dt) ? null : dt;
+}
+function fmtDate(d) {
+  var dt = parseDate(d);
+  if (!dt) return d || '';
+  return dt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+function fmtDateShort(d) {
+  var dt = parseDate(d);
+  if (!dt) return d || '';
+  return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+function todayStr() {
+  return new Date().toISOString().split('T')[0];
+}
+function isOverdue(dateStr) {
+  if (!dateStr) return false;
+  return dateStr < todayStr();
+}
+function escHtml(s) {
+  if (!s) return '';
+  var d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+function slugify(s) {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+function computeAge(dob) {
+  if (!dob) return '';
+  var bd = parseDate(dob);
+  if (!bd) return '';
+  var now = new Date();
+  var age = now.getFullYear() - bd.getFullYear();
+  var m = now.getMonth() - bd.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < bd.getDate())) age--;
+  return age;
+}
+
+function showToast(msg) {
+  var t = document.getElementById('admin-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'admin-toast';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.classList.add('toast-show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function() { t.classList.remove('toast-show'); }, 3000);
+}
+
+// ── AUTH GATE ──
+async function initAuth() {
+  // DEV BYPASS — localhost only, never fires on the live site
+  if (window.location.hostname === 'localhost' &&
+      new URLSearchParams(window.location.search).get('dev') === '1') {
+    currentUser = { id: 'dev-user', email: 'dev@localhost' };
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard-wrap').style.display = '';
+    document.getElementById('dash-user-email').textContent = 'dev@localhost';
+    setGreeting();
+    loadDashboard();
+    return;
+  }
+
+  var user = await getCurrentUser();
+  if (!user) {
+    document.getElementById('login-screen').style.display = '';
+    document.getElementById('dashboard-wrap').style.display = 'none';
+    return;
+  }
+
+  var { data: admin } = await _supabase
+    .from('site_admins')
+    .select('user_id')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (!admin) {
+    window.location.href = '/';
+    return;
+  }
+
+  currentUser = user;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('dashboard-wrap').style.display = '';
+  document.getElementById('dash-user-email').textContent = user.email;
+  setGreeting();
+  loadDashboard();
+}
+
+async function handleLogin() {
+  var email = document.getElementById('login-email').value.trim();
+  if (!email) return;
+  var result = await sendMagicLink(email, window.location.href);
+  var actionEl = document.getElementById('login-action');
+  if (result.error) {
+    actionEl.innerHTML = '<div class="login-sent">Error: ' + escHtml(result.error) + '</div>';
+  } else {
+    actionEl.innerHTML = '<div class="login-sent">A sign-in link has been sent to ' + escHtml(email) + '. Check your inbox.</div>';
+  }
+}
+
+// ── DASHBOARD LOAD ──
+async function loadDashboard() {
+  var main = document.getElementById('dash-main');
+  main.classList.add('loaded');
+
+  // Parallel data loads
+  var [pRes, jRes, nRes, prRes, fuRes, reqRes] = await Promise.all([
+    _supabase.from('parishioners').select('*').order('last_name', { ascending: true }),
+    _supabase.from('journey_progress').select('user_id, page_key, completed, completed_at, notes'),
+    _supabase.from('pastoral_notes').select('*').order('written_at', { ascending: false }),
+    _supabase.from('prayer_rules').select('*'),
+    _supabase.from('family_units').select('*'),
+    _supabase.from('prayer_requests').select('*').order('created_at', { ascending: false })
+  ]);
+
+  allParishioners = pRes.data || [];
+  allJourneyRows = jRes.data || [];
+  allPastoralNotes = nRes.data || [];
+  allPrayerRules = prRes.data || [];
+  allFamilyUnits = fuRes.data || [];
+  allPrayerRequests = reqRes.data || [];
+
+  loadLiturgicalSubtitle();
+  renderAttentionStrip(allPrayerRequests);
+  renderFlockCards();
+  renderPrayerRequests(allPrayerRequests);
+  loadPrayerList();
+  loadBulletin();
+  loadEvents();
+  loadOverrides();
+  bindFlockControls();
+
+  // Update tab badges
+  var flockBadge = document.getElementById('flock-badge');
+  if (flockBadge) flockBadge.textContent = allParishioners.filter(function(p){ return !p.archived; }).length || '';
+  var unackCount = allPrayerRequests.filter(function(r){ return !r.acknowledged; }).length;
+  var prayerBadge = document.getElementById('prayer-badge');
+  if (prayerBadge) prayerBadge.textContent = unackCount || '';
+}
+
+// ── NOTIFICATION BELL ──
+var notifItems = [];
+
+function toggleNotifDropdown() {
+  var dd = document.getElementById('notif-dropdown');
+  dd.classList.toggle('open');
+}
+
+document.addEventListener('click', function(e) {
+  var wrap = document.getElementById('notif-wrap');
+  if (wrap && !wrap.contains(e.target)) {
+    var dd = document.getElementById('notif-dropdown');
+    if (dd) dd.classList.remove('open');
+  }
+});
+
+function getNotifDismissed() {
+  try { return JSON.parse(localStorage.getItem('notif-dismissed') || '[]'); } catch(e) { return []; }
+}
+function setNotifDismissed(arr) {
+  try { localStorage.setItem('notif-dismissed', JSON.stringify(arr)); } catch(e) {}
+}
+
+function renderAttentionStrip(prayerRequests) {
+  var today = todayStr();
+  var weekAgo = new Date();
+  weekAgo.setDate(weekAgo.getDate() - 7);
+  var weekAgoStr = weekAgo.toISOString();
+  var twoDaysAgo = new Date();
+  twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+  var twoDaysAgoStr = twoDaysAgo.toISOString();
+  var dismissed = getNotifDismissed();
+
+  notifItems = [];
+
+  // Overdue follow-ups
+  allPastoralNotes.forEach(function(n) {
+    if (!n.resolved && n.follow_up_date && n.follow_up_date <= today) {
+      var key = 'note-' + n.id + '-' + n.follow_up_date;
+      if (dismissed.indexOf(key) !== -1) return;
+      var p = allParishioners.find(function(pp) { return pp.id === n.parishioner_id; });
+      if (!p) return;
+      var overdue = n.follow_up_date < today;
+      var pid = p.id;
+      notifItems.push({
+        type: overdue ? 'overdue' : 'followup',
+        icon: overdue ? '!' : '\u25CB',
+        label: overdue ? 'Overdue Follow-up' : 'Follow-up Due',
+        name: p.first_name + ' ' + p.last_name,
+        date: fmtDateShort(n.follow_up_date),
+        key: key,
+        isPrayer: false,
+        action: function() { closeNotifDropdown(); openRecord(pid); }
+      });
+    }
+  });
+
+  // New registrations
+  allParishioners.forEach(function(p) {
+    if (!p.admin_created && p.user_id && p.created_at && p.created_at >= weekAgoStr) {
+      var key = 'new-' + p.id;
+      if (dismissed.indexOf(key) !== -1) return;
+      var pid = p.id;
+      notifItems.push({
+        type: 'new',
+        icon: '+',
+        label: 'New Registration',
+        name: p.first_name + ' ' + p.last_name,
+        date: fmtDateShort(p.created_at),
+        key: key,
+        isPrayer: false,
+        action: function() { closeNotifDropdown(); openRecord(pid); }
+      });
+    }
+  });
+
+  // Prayer requests
+  (prayerRequests || []).forEach(function(r) {
+    if (!r.acknowledged) {
+      var rid = r.id;
+      notifItems.push({
+        type: 'prayer',
+        icon: '\u271D\uFE0E',
+        label: 'Prayer Request',
+        name: r.name || 'A parishioner',
+        date: fmtDateShort(r.created_at),
+        key: 'prayer-' + rid,
+        isPrayer: true,
+        prayerId: rid,
+        action: function() {
+          closeNotifDropdown();
+          document.getElementById('prayer-requests').scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    }
+  });
+
+  // Profile updates
+  allParishioners.forEach(function(p) {
+    if (!p.admin_created && p.user_id && p.updated_at && p.updated_at >= twoDaysAgoStr &&
+        (!p.created_at || p.created_at < weekAgoStr)) {
+      var key = 'update-' + p.id + '-' + (p.updated_at || '').slice(0, 10);
+      if (dismissed.indexOf(key) !== -1) return;
+      var pid = p.id;
+      notifItems.push({
+        type: 'update',
+        icon: '\u270E\uFE0E',
+        label: 'Profile Updated',
+        name: p.first_name + ' ' + p.last_name,
+        date: fmtDateShort(p.updated_at),
+        key: key,
+        isPrayer: false,
+        action: function() { closeNotifDropdown(); openRecord(pid); }
+      });
+    }
+  });
+
+  // Update bell count
+  var countEl = document.getElementById('notif-count');
+  var bellEl = document.getElementById('notif-bell');
+  if (notifItems.length > 0) {
+    countEl.textContent = notifItems.length > 99 ? '99+' : notifItems.length;
+    countEl.style.display = 'flex';
+    bellEl.classList.add('has-items');
+  } else {
+    countEl.style.display = 'none';
+    bellEl.classList.remove('has-items');
+  }
+
+  // Render dropdown cards
+  var list = document.getElementById('notif-list');
+  if (notifItems.length === 0) {
+    list.innerHTML = '<div class="notif-empty">All caught up.</div>';
+    return;
+  }
+  list.innerHTML = notifItems.map(function(it, idx) {
+    return '<div class="notif-card notif-card-' + it.type + '" data-notif-idx="' + idx + '">' +
+      '<div class="notif-icon">' + it.icon + '</div>' +
+      '<div class="notif-card-body">' +
+        '<div class="notif-card-name">' + escHtml(it.name) + '</div>' +
+        '<div class="notif-card-label">' + escHtml(it.label) + '</div>' +
+      '</div>' +
+      '<div class="notif-card-right">' +
+        '<button class="notif-dismiss" data-dismiss-idx="' + idx + '" title="Dismiss" aria-label="Dismiss notification">&times;</button>' +
+        '<div class="notif-card-date">' + escHtml(it.date) + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  list.querySelectorAll('.notif-card').forEach(function(card) {
+    card.addEventListener('click', function() {
+      var idx = parseInt(card.getAttribute('data-notif-idx'));
+      notifItems[idx].action();
+    });
+  });
+  list.querySelectorAll('.notif-dismiss').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var idx = parseInt(btn.getAttribute('data-dismiss-idx'));
+      dismissNotif(idx);
+    });
+  });
+}
+
+function dismissNotif(idx) {
+  var it = notifItems[idx];
+  if (!it) return;
+  if (it.isPrayer) {
+    acknowledgeRequest(it.prayerId);
+  } else {
+    var dismissed = getNotifDismissed();
+    if (dismissed.indexOf(it.key) === -1) dismissed.push(it.key);
+    // Prune old keys to keep localStorage tidy (keep last 200)
+    if (dismissed.length > 200) dismissed = dismissed.slice(-200);
+    setNotifDismissed(dismissed);
+    notifItems.splice(idx, 1);
+    renderAttentionStrip(allPrayerRequests);
+  }
+}
+
+function closeNotifDropdown() {
+  var dd = document.getElementById('notif-dropdown');
+  if (dd) dd.classList.remove('open');
+}
+
+// ── FLOCK CARDS ──
+function getJourneyCount(userId) {
+  if (!userId) return 0;
+  return allJourneyRows.filter(function(j) { return j.user_id === userId && j.completed; }).length;
+}
+function hasPrayerRule(userId) {
+  if (!userId) return false;
+  return allPrayerRules.some(function(r) { return r.user_id === userId && r.prayer_ids && r.prayer_ids.length > 0; });
+}
+function getRecentNote(parishionerId) {
+  return allPastoralNotes.find(function(n) { return n.parishioner_id === parishionerId; });
+}
+function getUnresolvedFollowup(parishionerId) {
+  return allPastoralNotes.find(function(n) {
+    return n.parishioner_id === parishionerId && !n.resolved && n.follow_up_date;
+  });
+}
+function getFamilyName(fuId) {
+  if (!fuId) return '';
+  var fu = allFamilyUnits.find(function(f) { return f.id === fuId; });
+  return fu ? fu.family_name : '';
+}
+function hasFollowupNeed(parishionerId) {
+  return allPastoralNotes.some(function(n) {
+    return n.parishioner_id === parishionerId && !n.resolved && n.follow_up_date;
+  });
+}
+
+function sortParishioners(list) {
+  var today = todayStr();
+  var weekAgo = new Date();
+  weekAgo.setDate(weekAgo.getDate() - 7);
+  var weekAgoStr = weekAgo.toISOString();
+
+  return list.slice().sort(function(a, b) {
+    var aFlagged = a.flagged ? 1 : 0;
+    var bFlagged = b.flagged ? 1 : 0;
+    if (bFlagged !== aFlagged) return bFlagged - aFlagged;
+
+    var aOverdue = allPastoralNotes.some(function(n) {
+      return n.parishioner_id === a.id && !n.resolved && n.follow_up_date && n.follow_up_date < today;
+    }) ? 1 : 0;
+    var bOverdue = allPastoralNotes.some(function(n) {
+      return n.parishioner_id === b.id && !n.resolved && n.follow_up_date && n.follow_up_date < today;
+    }) ? 1 : 0;
+    if (bOverdue !== aOverdue) return bOverdue - aOverdue;
+
+    var aNew = (a.created_at && a.created_at >= weekAgoStr) ? 1 : 0;
+    var bNew = (b.created_at && b.created_at >= weekAgoStr) ? 1 : 0;
+    if (bNew !== aNew) return bNew - aNew;
+
+    return (a.last_name || '').localeCompare(b.last_name || '');
+  });
+}
+
+function filterParishioners() {
+  var list = allParishioners;
+
+  if (searchTerm) {
+    var q = searchTerm.toLowerCase();
+    list = list.filter(function(p) {
+      return ((p.first_name || '') + ' ' + (p.last_name || '')).toLowerCase().indexOf(q) >= 0;
+    });
+  }
+
+  if (activeFilter === 'followup') {
+    list = list.filter(function(p) { return hasFollowupNeed(p.id); });
+  } else if (activeFilter === 'inquirer') {
+    list = list.filter(function(p) { return p.status === 'inquirer'; });
+  } else if (activeFilter === 'catechumen') {
+    list = list.filter(function(p) { return p.status === 'catechumen'; });
+  } else if (activeFilter === 'member') {
+    list = list.filter(function(p) { return p.status === 'member' || p.status === 'baptized'; });
+  } else if (activeFilter === 'admin-created') {
+    list = list.filter(function(p) { return p.admin_created; });
+  } else if (activeFilter === 'archived') {
+    list = list.filter(function(p) { return p.status === 'transferred' || p.status === 'reposed'; });
+  } else {
+    // 'all' — hide transferred/reposed by default
+    list = list.filter(function(p) { return p.status !== 'transferred' && p.status !== 'reposed'; });
+  }
+
+  return sortParishioners(list);
+}
+
+function renderFlockCards() {
+  var container = document.getElementById('p-card-list');
+  var list = filterParishioners();
+
+  if (list.length === 0) {
+    container.innerHTML = '<div class="p-empty">' + (allParishioners.length === 0 ? 'No parishioners registered yet.' : 'No results match your search.') + '</div>';
+    return;
+  }
+
+  container.innerHTML = list.map(function(p, idx) {
+    var note = getRecentNote(p.id);
+    var followup = getUnresolvedFollowup(p.id);
+    var jCount = getJourneyCount(p.user_id);
+    var hasRule = hasPrayerRule(p.user_id);
+    var familyName = getFamilyName(p.family_unit_id);
+    var firstName = p.first_name || '';
+    var lastName = p.last_name || '';
+    var initials = (firstName[0] || '').toUpperCase() + (lastName[0] || '').toUpperCase();
+    var status = p.status || 'member';
+
+    // Avatar category class
+    var avatarCat = status === 'inquirer' ? 'cat-inquirer' :
+                    status === 'catechumen' ? 'cat-catechumen' :
+                    (status === 'transferred' || status === 'reposed') ? 'cat-inactive' : 'cat-parishioner';
+
+    // Sub-line meta: "Parishioner since YEAR · Nameday: Mon D"
+    var subParts = [];
+    var statusWord = (status === 'member' || status === 'baptized') ? 'Parishioner' :
+                     status === 'catechumen' ? 'Catechumen' :
+                     status === 'inquirer' ? 'Inquirer' : 'Member';
+    var sinceYear = p.created_at ? new Date(p.created_at).getFullYear() : '';
+    if (sinceYear) subParts.push(statusWord + ' since ' + sinceYear);
+    // Nameday date (stored as "Nov 8" or ISO date)
+    var namedayStr = p.nameday_date || '';
+    if (namedayStr) {
+      var nd = parseDate(namedayStr);
+      var ndDisplay = nd ? nd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : namedayStr;
+      subParts.push('Nameday: ' + ndDisplay);
+    }
+    // Overdue follow-up — still surface this
+    if (followup && isOverdue(followup.follow_up_date)) {
+      subParts.push('Follow-up overdue');
+    }
+    var subLine = subParts.join(' \u00B7 ');
+
+    // Engagement dots (journey progress out of 5 visual dots)
+    var dotCount = Math.min(Math.round(jCount / 11 * 5), 5);
+    var dotsHtml = '';
+    for (var d = 0; d < 5; d++) {
+      dotsHtml += '<span class="p-card-dot' + (d < dotCount ? ' filled' : '') + '"></span>';
+    }
+
+    // Status label display
+    var statusLabel = status === 'member' ? 'Active' :
+                      status === 'baptized' ? 'Baptized' :
+                      status.charAt(0).toUpperCase() + status.slice(1);
+
+    // Drawer: Contact / Sacraments / Notes
+    var notes = allPastoralNotes.filter(function(n) { return n.parishioner_id === p.id; }).slice(0, 2);
+    var notesHtml = notes.length > 0
+      ? notes.map(function(n) {
+          return '<div class="drawer-note-entry"><span class="drawer-note-date">' + fmtDateShort(n.written_at) + '</span>' + escHtml(n.note_text) + '</div>';
+        }).join('')
+      : '<div class="drawer-note-entry" style="color:var(--stone);font-style:italic">No notes yet.</div>';
+
+    var drawerHtml =
+      '<div class="drawer-grid">' +
+        '<div>' +
+          '<span class="drawer-section-label">Contact</span>' +
+          '<div class="drawer-value-sm">' + escHtml(p.email || '—') + '</div>' +
+          '<div class="drawer-value-sm">' + escHtml(p.phone || '—') + '</div>' +
+        '</div>' +
+        '<div>' +
+          '<span class="drawer-section-label">Sacraments</span>' +
+          '<div class="drawer-value-sm">Baptism: ' + escHtml(p.baptism_date ? fmtDateShort(p.baptism_date) : '—') + '</div>' +
+          '<div class="drawer-value-sm">Nameday: ' + escHtml(p.nameday_saint || '—') + '</div>' +
+        '</div>' +
+        '<div>' +
+          '<span class="drawer-section-label">Engagement</span>' +
+          '<div class="drawer-value-sm">Journey: ' + jCount + ' / 11</div>' +
+          '<div class="drawer-value-sm">Prayer rule: ' + (hasRule ? 'Yes' : 'None') + '</div>' +
+        '</div>' +
+        '<div class="drawer-notes">' +
+          '<span class="drawer-section-label">Pastoral Notes</span>' +
+          notesHtml +
+        '</div>' +
+      '</div>' +
+      '<div class="drawer-actions">' +
+        '<button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openRecord(\'' + p.id + '\')">View Full Record</button>' +
+      '</div>';
+
+    var rowHtml =
+      '<div class="p-card' + (p.flagged ? ' p-card-flagged' : '') + '" data-id="' + p.id + '" data-status="' + status + '" onclick="toggleDrawer(this)" style="animation-delay:' + Math.min(idx * 40, 240) + 'ms">' +
+        '<div class="p-card-avatar ' + avatarCat + '">' + escHtml(initials) + '</div>' +
+        '<div class="p-card-info">' +
+          '<div class="p-card-name">' + escHtml(firstName) + ' ' + escHtml(lastName) + '</div>' +
+          (subLine ? '<div class="p-card-sub">' + escHtml(subLine) + '</div>' : '') +
+        '</div>' +
+        '<span class="p-card-status p-status-' + (status === 'member' || status === 'baptized' ? 'active' : status) + '">' + statusLabel + '</span>' +
+        '<div class="p-card-dots">' + dotsHtml + '</div>' +
+        '<span class="p-card-arrow">&#8250;</span>' +
+      '</div>' +
+      '<div class="p-card-drawer">' + drawerHtml + '</div>';
+
+    return rowHtml;
+  }).join('');
+}
+
+function bindFlockControls() {
+  document.getElementById('flock-search').addEventListener('input', function(e) {
+    searchTerm = e.target.value;
+    renderFlockCards();
+  });
+  document.querySelectorAll('.flock-pill').forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      document.querySelectorAll('.flock-pill').forEach(function(p) { p.classList.remove('active'); });
+      pill.classList.add('active');
+      activeFilter = pill.getAttribute('data-filter');
+      renderFlockCards();
+    });
+  });
+}
+
+// ── PRAYER REQUESTS ──
+function renderPrayerRequests(requests) {
+  var active = requests.filter(function(r) { return !r.acknowledged; });
+  var archived = requests.filter(function(r) { return r.acknowledged; });
+  var activeContainer = document.getElementById('prayer-requests');
+  var archiveContainer = document.getElementById('prayer-archived');
+
+  // New requests
+  if (active.length === 0) {
+    activeContainer.innerHTML = '<div class="p-empty" style="font-style:italic;color:var(--stone);padding:.75rem 0;font-size:.9rem">No pending requests.</div>';
+  } else {
+    activeContainer.innerHTML = active.map(function(r) {
+      return '<div class="pr2-card" id="pr-' + r.id + '">' +
+        '<div class="pr2-icon pr2-icon-cross">&#x2020;</div>' +
+        '<div class="pr2-body">' +
+          '<div class="pr2-name">' + escHtml(r.name || 'A parishioner') + '</div>' +
+          '<div class="pr2-text">' + escHtml(r.intention || r.request_text || '') + '</div>' +
+          '<div class="pr2-submitted">Submitted ' + fmtDateShort(r.created_at || r.submitted_at) + '</div>' +
+        '</div>' +
+        '<button class="pr2-ack-btn" data-ack="' + r.id + '" data-tip="Mark as acknowledged">Acknowledge</button>' +
+      '</div>';
+    }).join('');
+    activeContainer.querySelectorAll('[data-ack]').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        acknowledgeRequest(btn.getAttribute('data-ack'));
+      });
+    });
+  }
+
+  // Acknowledged
+  if (archived.length === 0) {
+    archiveContainer.innerHTML = '<div class="p-empty" style="font-style:italic;color:var(--stone);padding:.75rem 0;font-size:.9rem">None yet.</div>';
+  } else {
+    archiveContainer.innerHTML = archived.slice(0, 6).map(function(r) {
+      return '<div class="pr2-card pr2-card-acked">' +
+        '<div class="pr2-icon pr2-icon-check">&#x2713;</div>' +
+        '<div class="pr2-body">' +
+          '<div class="pr2-name">' + escHtml(r.name || 'A parishioner') + '</div>' +
+          '<div class="pr2-text">' + escHtml(r.intention || r.request_text || '') + '</div>' +
+          '<div class="pr2-acked-date">Acknowledged ' + fmtDateShort(r.acknowledged_at) + '</div>' +
+        '</div>' +
+        '<div class="pr2-acked-btn">&#x2713;</div>' +
+      '</div>';
+    }).join('');
+  }
+}
+
+async function acknowledgeRequest(id) {
+  var now = new Date().toISOString();
+  var ackPayload = { acknowledged: true, acknowledged_at: now };
+  if (currentUser && currentUser.id && currentUser.id !== 'dev-user') {
+    ackPayload.acknowledged_by = currentUser.id;
+  }
+  await _supabase.from('prayer_requests').update(ackPayload).eq('id', id);
+  var req = allPrayerRequests.find(function(r) { return r.id === id; });
+  if (req) { req.acknowledged = true; req.acknowledged_at = now; }
+  renderPrayerRequests(allPrayerRequests);
+  renderAttentionStrip(allPrayerRequests);
+  showToast('Request acknowledged.');
+}
+
+// ── PRAYER LIST ──
+async function loadPrayerList() {
+  try {
+    var res = await fetch('/prayer-list.json');
+    prayerListData = await res.json();
+  } catch(e) {
+    prayerListData = { names: [] };
+  }
+  renderPrayerList();
+}
+
+function renderPrayerList() {
+  var container = document.getElementById('prayer-list-entries');
+  if (!prayerListData.names || prayerListData.names.length === 0) {
+    container.innerHTML = '<div class="p-empty">No names on the list.</div>';
+    return;
+  }
+  container.innerHTML = prayerListData.names.map(function(name, i) {
+    return '<div class="pl-entry"><span>' + escHtml(name) + '</span><button data-rm="' + i + '" data-tip="Remove this name from the intercession list">&times;</button></div>';
+  }).join('');
+  container.querySelectorAll('[data-rm]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      removeFromList(parseInt(btn.getAttribute('data-rm')));
+    });
+  });
+}
+
+function addToList(name) {
+  if (!name) return;
+  prayerListData.names.push(name);
+  renderPrayerList();
+  ensureGhToken(function() { doSaveList(function() { prayerListData.names.pop(); }); });
+}
+
+function addNameToList() {
+  var input = document.getElementById('pl-new-name');
+  var name = input.value.trim();
+  if (!name) return;
+  prayerListData.names.push(name);
+  input.value = '';
+  renderPrayerList();
+  ensureGhToken(function() { doSaveList(function() { prayerListData.names.pop(); }); });
+}
+
+function removeFromList(idx) {
+  var removed = prayerListData.names.splice(idx, 1);
+  renderPrayerList();
+  ensureGhToken(function() { doSaveList(function() { prayerListData.names.splice(idx, 0, removed[0]); }); });
+}
+
+async function doSaveList(rollbackFn) {
+  try {
+    await writeJsonFile('prayer-list.json', prayerListData);
+    showToast('Saved. Site will update in about 30 seconds.');
+  } catch(e) {
+    showToast('Save failed. Check your token and try again.');
+    sessionStorage.removeItem('gh_token');
+    if (rollbackFn) rollbackFn();
+    renderPrayerList();
+  }
+}
+
+// ── GITHUB API ──
+function ensureGhToken(callback) {
+  if (sessionStorage.getItem('gh_token')) {
+    callback();
+    return;
+  }
+  ghPendingCallback = callback;
+  document.getElementById('gh-modal').classList.add('open');
+}
+
+function saveGhToken() {
+  var token = document.getElementById('gh-token-input').value.trim();
+  if (!token) return;
+  sessionStorage.setItem('gh_token', token);
+  document.getElementById('gh-modal').classList.remove('open');
+  document.getElementById('gh-token-input').value = '';
+  if (ghPendingCallback) {
+    ghPendingCallback();
+    ghPendingCallback = null;
+  }
+}
+
+async function writeJsonFile(path, content) {
+  var token = sessionStorage.getItem('gh_token');
+  var owner = 'ssppnjcathedral';
+  var repo = 'ssppnjwebsite';
+  var branch = 'main';
+
+  var getRes = await fetch(
+    'https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + path,
+    { headers: { Authorization: 'Bearer ' + token } }
+  );
+  var getJson = await getRes.json();
+  var sha = getJson.sha;
+
+  var putRes = await fetch(
+    'https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + path,
+    {
+      method: 'PUT',
+      headers: {
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: 'Admin update: ' + path,
+        content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))),
+        sha: sha,
+        branch: branch
+      })
+    }
+  );
+
+  if (!putRes.ok) throw new Error('GitHub write failed');
+}
+
+// ── BULLETIN ──
+async function loadBulletin() {
+  var container = document.getElementById('bulletin-card');
+  try {
+    var res = await fetch('/bulletins.json');
+    var bulletins = await res.json();
+    var today = todayStr();
+    // Find closest bulletin to today (prefer past/equal)
+    var best = null;
+    var bestDiff = Infinity;
+    bulletins.forEach(function(b) {
+      if (!b.date) return;
+      var diff = Math.abs(new Date(b.date) - new Date(today));
+      var isPast = b.date <= today;
+      // Prefer past dates
+      if (isPast && (!best || b.date > best.date)) { best = b; }
+      else if (!best && diff < bestDiff) { best = b; bestDiff = diff; }
+    });
+    if (!best) { container.innerHTML = ''; return; }
+
+    container.innerHTML =
+      '<div class="bulletin-hero">' +
+        '<div class="bulletin-hero-icon">' +
+          '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>' +
+        '</div>' +
+        '<div class="bulletin-hero-info">' +
+          '<span class="bulletin-hero-kicker">Current Bulletin</span>' +
+          '<span class="bulletin-hero-date">' + fmtDate(best.date) + '</span>' +
+          (best.reflection_title ? '<span class="bulletin-hero-title">' + escHtml(best.reflection_title) + '</span>' : '') +
+        '</div>' +
+        '<div class="bulletin-hero-actions">' +
+          '<a href="/bulletin?id=' + best.date + '" target="_blank" class="btn-primary" data-tip="Open the bulletin viewer for this week">Preview &rarr;</a>' +
+          '<a href="https://peterandpaulcathedral.com/admin/#/collections/bulletins" target="_blank" data-tip="Edit this bulletin in the CMS">Edit in Decap</a>' +
+        '</div>' +
+      '</div>';
+  } catch(e) {
+    container.innerHTML = '';
+  }
+}
+
+// ── EVENTS ──
+async function loadEvents() {
+  try {
+    var res = await fetch('/parish-events.json');
+    eventsData = await res.json();
+  } catch(e) {
+    eventsData = [];
+  }
+  renderEvents();
+}
+
+function renderEvents() {
+  var container = document.getElementById('events-list');
+  var today = todayStr();
+  var upcoming = eventsData
+    .filter(function(e) { return e.active && e.date >= today; })
+    .sort(function(a, b) { return a.date.localeCompare(b.date); })
+    .slice(0, 3);
+
+  if (upcoming.length === 0) {
+    container.innerHTML = '<div class="p-empty">No upcoming events.</div>';
+    return;
+  }
+
+  container.innerHTML = upcoming.map(function(e) {
+    return '<div class="pl-event-row">' +
+      '<span class="pl-event-date">' + fmtDateShort(e.date) + '</span>' +
+      '<div class="pl-event-info">' +
+        '<span class="pl-event-title">' + escHtml(e.title) + '</span>' +
+        '<span class="pl-event-sub">' + escHtml([e.time, e.location].filter(Boolean).join(' \u00B7 ')) + '</span>' +
+      '</div>' +
+      '<a data-edit-event="' + escHtml(e.id) + '" data-tip="Edit this event\'s title, date, or details">Edit &rarr;</a>' +
+    '</div>';
+  }).join('');
+
+  container.querySelectorAll('[data-edit-event]').forEach(function(a) {
+    a.addEventListener('click', function() {
+      openEditEvent(a.getAttribute('data-edit-event'));
+    });
+  });
+}
+
+function openAddEvent() {
+  var fc = document.getElementById('event-form-container');
+  fc.innerHTML = '<div class="event-form-panel open">' +
+    '<label>Title</label><input id="ef-title" required>' +
+    '<label>Date</label><input id="ef-date" type="date" required>' +
+    '<label>Time</label><input id="ef-time" placeholder="6:30 PM">' +
+    '<label>Type</label><select id="ef-type"><option>liturgy</option><option>vespers</option><option>community</option><option>social</option><option>concert</option><option>announcement</option></select>' +
+    '<label>Location</label><input id="ef-location" value="Cathedral Nave \u00B7 109 Grand Street">' +
+    '<label>Description</label><textarea id="ef-desc" rows="3"></textarea>' +
+    '<div class="event-form-actions"><button class="ef-save" onclick="saveNewEvent()" data-tip="Save this event and publish it to the parish calendar">Save Event</button><button class="ef-cancel" onclick="closeEventForm()" data-tip="Discard this event and close the form">Cancel</button></div>' +
+  '</div>';
+}
+
+function openEditEvent(id) {
+  var ev = eventsData.find(function(e) { return e.id === id; });
+  if (!ev) return;
+  var fc = document.getElementById('event-form-container');
+  fc.innerHTML = '<div class="event-form-panel open">' +
+    '<label>Title</label><input id="ef-title" value="' + escHtml(ev.title || '') + '">' +
+    '<label>Date</label><input id="ef-date" type="date" value="' + (ev.date || '') + '">' +
+    '<label>Time</label><input id="ef-time" value="' + escHtml(ev.time || '') + '">' +
+    '<label>Type</label><select id="ef-type">' +
+      ['liturgy','vespers','community','social','concert','announcement'].map(function(t) {
+        return '<option' + (ev.type === t ? ' selected' : '') + '>' + t + '</option>';
+      }).join('') +
+    '</select>' +
+    '<label>Location</label><input id="ef-location" value="' + escHtml(ev.location || '') + '">' +
+    '<label>Description</label><textarea id="ef-desc" rows="3">' + escHtml(ev.description || '') + '</textarea>' +
+    '<div class="event-form-actions"><button class="ef-save" data-edit-id="' + escHtml(id) + '" onclick="saveEditEvent(\'' + escHtml(id) + '\')" data-tip="Save your changes and update this event on the website">Save Changes</button><button class="ef-cancel" onclick="closeEventForm()" data-tip="Discard changes and close the form">Cancel</button></div>' +
+  '</div>';
+}
+
+function closeEventForm() {
+  document.getElementById('event-form-container').innerHTML = '';
+}
+
+function saveNewEvent() {
+  var title = document.getElementById('ef-title').value.trim();
+  var date = document.getElementById('ef-date').value;
+  if (!title || !date) { showToast('Title and date are required.'); return; }
+
+  var ev = {
+    id: slugify(title) + '-' + date.replace(/-/g, '').slice(4),
+    active: true,
+    featured: false,
+    title: title,
+    subtitle: '',
+    type: document.getElementById('ef-type').value,
+    date: date,
+    time: document.getElementById('ef-time').value.trim(),
+    location: document.getElementById('ef-location').value.trim(),
+    contact: '',
+    description: document.getElementById('ef-desc').value.trim(),
+    image: '',
+    link: ''
+  };
+  ensureGhToken(function() {
+    eventsData.push(ev);
+    doSaveEvents('Event added.', function() { eventsData.pop(); });
+  });
+}
+
+function saveEditEvent(id) {
+  var idx = eventsData.findIndex(function(e) { return e.id === id; });
+  if (idx < 0) return;
+  var updated = {
+    title: document.getElementById('ef-title').value.trim(),
+    date: document.getElementById('ef-date').value,
+    time: document.getElementById('ef-time').value.trim(),
+    type: document.getElementById('ef-type').value,
+    location: document.getElementById('ef-location').value.trim(),
+    description: document.getElementById('ef-desc').value.trim()
+  };
+  var original = Object.assign({}, eventsData[idx]);
+  ensureGhToken(function() {
+    Object.assign(eventsData[idx], updated);
+    doSaveEvents('Event updated.', function() { Object.assign(eventsData[idx], original); });
+  });
+}
+
+async function doSaveEvents(msg, rollbackFn) {
+  try {
+    await writeJsonFile('parish-events.json', eventsData);
+    showToast(msg || 'Saved. Site will update in about 30 seconds.');
+    closeEventForm();
+    renderEvents();
+  } catch(e) {
+    showToast('Save failed. Check your token and try again.');
+    sessionStorage.removeItem('gh_token');
+    if (rollbackFn) rollbackFn();
+  }
+}
+
+// ── CONTENT OVERRIDES ──
+async function loadOverrides() {
+  var container = document.getElementById('overrides-list');
+  var { data } = await _supabase
+    .from('content_overrides')
+    .select('*')
+    .order('updated_at', { ascending: false })
+    .limit(5);
+
+  if (!data || data.length === 0) {
+    container.innerHTML = '<div class="recent-edits-empty">No recent edits</div>';
+    return;
+  }
+
+  container.innerHTML = data.map(function(o) {
+    return '<div class="co-row">' +
+      '<span class="co-page">' + escHtml(o.page_key) + '</span>' +
+      '<span class="co-type">' + escHtml(o.override_type) + '</span>' +
+      '<span class="co-date">' + fmtDateShort(o.updated_at) + '</span>' +
+      '<button data-undo-id="' + o.id + '" data-undo-page="' + escHtml(o.page_key) + '" data-undo-sel="' + escHtml(o.selector) + '" data-undo-type="' + escHtml(o.override_type) + '" data-tip="Revert this edit and restore the original text on the website">Undo</button>' +
+    '</div>';
+  }).join('');
+
+  container.querySelectorAll('[data-undo-id]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      undoOverride(btn.getAttribute('data-undo-id'));
+    });
+  });
+}
+
+async function undoOverride(id) {
+  await _supabase.from('content_overrides').delete().eq('id', id);
+  showToast('Reverted. Reload the page to see the change.');
+  loadOverrides();
+}
+
+// ── CLOSE PANELS ──
+function closeAllPanels() {
+  document.getElementById('panel-overlay').classList.remove('open');
+  document.getElementById('record-panel').classList.remove('open');
+  document.getElementById('add-panel').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function openPanel(panelId) {
+  document.getElementById('panel-overlay').classList.add('open');
+  document.getElementById(panelId).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+// ── RECORD PANEL ──
+var currentRecordId = null;
+var editMode = false;
+
+async function openRecord(id) {
+  currentRecordId = id;
+  editMode = false;
+
+  var { data: p } = await _supabase.from('parishioners').select('*').eq('id', id).single();
+  if (!p) return;
+
+  var journey = [];
+  var prayerRule = null;
+  if (p.user_id) {
+    var [jRes, prRes] = await Promise.all([
+      _supabase.from('journey_progress').select('*').eq('user_id', p.user_id),
+      _supabase.from('prayer_rules').select('*').eq('user_id', p.user_id).maybeSingle()
+    ]);
+    journey = jRes.data || [];
+    prayerRule = prRes.data;
+  }
+
+  var { data: notes } = await _supabase
+    .from('pastoral_notes')
+    .select('*')
+    .eq('parishioner_id', id)
+    .order('written_at', { ascending: false });
+
+  renderRecord(p, journey, prayerRule, notes || []);
+  openPanel('record-panel');
+}
+
+function renderRecord(p, journey, prayerRule, notes) {
+  var panel = document.getElementById('record-panel');
+  var initial = (p.first_name || '?')[0].toUpperCase();
+  var status = p.status || 'member';
+  var familyName = getFamilyName(p.family_unit_id);
+
+  var avatarHtml = p.photo_url
+    ? '<img src="' + escHtml(p.photo_url) + '" onerror="this.style.display=\'none\';this.parentElement.textContent=\'' + initial + '\'" alt="">'
+    : initial;
+
+  // Header
+  var html = '<div class="rec-header">' +
+    '<div class="rec-avatar">' + avatarHtml + '</div>' +
+    '<div class="rec-header-info">' +
+      '<h1 class="rec-name">' + escHtml(p.first_name) + ' ' + escHtml(p.last_name) + '</h1>' +
+      '<span class="rec-badge p-card-badge p-badge-' + status + '">' + escHtml(status) + '</span>' +
+      (familyName ? '<span class="rec-family">Family: ' + escHtml(familyName) + '</span>' : '') +
+    '</div>' +
+    '<div class="rec-header-actions">' +
+      '<button id="rec-edit-btn" onclick="toggleEditMode()" data-tip="Edit this parishioner\'s profile information">Edit Profile</button>' +
+      '<button onclick="toggleFlag(\'' + p.id + '\', ' + (p.flagged ? 'true' : 'false') + ')" data-tip="' + (p.flagged ? 'Remove the flag — no urgent pastoral attention needed' : 'Flag this person as needing your pastoral attention') + '">' + (p.flagged ? 'Unflag' : 'Flag') + '</button>' +
+      (p.email ? '<button onclick="emailParishioner(\'' + escHtml(p.email) + '\')" data-tip="Open a new email to ' + escHtml(p.first_name) + '">Email &rarr;</button>' : '') +
+      '<button class="rec-close" onclick="closeAllPanels()" data-tip="Close this record and return to the list">&times;</button>' +
+    '</div>' +
+  '</div>';
+
+  // Body
+  html += '<div class="rec-body"><div class="rec-body-left" id="rec-left">';
+
+  // Personal section
+  html += renderReadSection(p);
+
+  // Journey progress
+  if (p.user_id && journey.length > 0) {
+    var completed = journey.filter(function(j) { return j.completed; });
+    var count = completed.length;
+    html += '<div class="rec-section-label">Journey Progress</div>';
+    html += '<div class="rec-journey-summary">' + count + ' of 11 articles read</div>';
+    html += '<div class="rec-progress-bar"><div class="rec-progress-fill" style="width:' + Math.round(count / 11 * 100) + '%"></div></div>';
+
+    JOURNEY_PAGES.forEach(function(pg) {
+      var match = journey.find(function(j) { return j.page_key === pg.key && j.completed; });
+      var done = !!match;
+      html += '<div class="rec-article' + (done ? ' rec-article-done' : '') + '">' +
+        '<span class="rec-article-check">' + (done ? '\u2713' : '\u25CB') + '</span>' +
+        '<span class="rec-article-title">' + escHtml(pg.title) + '</span>' +
+        (done && match.completed_at ? '<span class="rec-article-date">' + fmtDateShort(match.completed_at) + '</span>' : '') +
+      '</div>';
+      if (done && match.notes) {
+        var snippet = '';
+        try {
+          if (typeof match.notes === 'string' && match.notes.trim().charAt(0) === '[') {
+            var entries = JSON.parse(match.notes);
+            if (entries.length > 0) snippet = entries[entries.length - 1].text || entries[entries.length - 1];
+          } else {
+            snippet = match.notes;
+          }
+        } catch(e) { snippet = match.notes; }
+        if (snippet) {
+          html += '<div class="rec-article-notes">' + escHtml(String(snippet)) + '</div>';
+        }
+      }
+    });
+  }
+
+  // Prayer rule
+  if (prayerRule && prayerRule.prayer_ids && prayerRule.prayer_ids.length > 0) {
+    html += '<div class="rec-prayer-rule"><span class="section-kicker">Prayer Rule</span> ' +
+      prayerRule.prayer_ids.length + ' prayers' +
+      (prayerRule.rule_name ? ' &middot; "' + escHtml(prayerRule.rule_name) + '"' : '') +
+      (prayerRule.begun_date ? ' &middot; Begun ' + fmtDate(prayerRule.begun_date) : '') +
+    '</div>';
+  }
+
+  html += '</div>'; // end rec-body-left
+
+  // RIGHT COLUMN: Pastoral Notes
+  html += '<div class="rec-body-right">' +
+    '<div class="rec-section-label">Pastoral Notes</div>' +
+    '<div class="pn-add">' +
+      '<textarea id="pn-text" placeholder="Note..." rows="3"></textarea>' +
+      '<div class="pn-add-footer">' +
+        '<label>Follow-up by <input type="date" id="pn-followup"></label>' +
+        '<button class="pn-save-btn" onclick="saveNote(\'' + p.id + '\')" data-tip="Save this note to the pastoral record — visible only to parish administrators">Save Note</button>' +
+      '</div>' +
+    '</div>' +
+    '<div id="pn-notes-list">';
+
+  if (notes.length === 0) {
+    html += '<div class="p-empty">No notes yet.</div>';
+  } else {
+    html += renderNotesList(notes);
+  }
+
+  html += '</div>' +
+    '<div class="pn-confidential">Pastoral notes are visible to parish administrators only. For matters under the seal of confession, keep no written record.</div>' +
+  '</div>'; // end rec-body-right
+
+  html += '</div>'; // end rec-body
+
+  // Footer
+  html += '<div class="rec-footer" id="rec-footer">' +
+    '<button onclick="archiveParishioner(\'' + p.id + '\', \'transferred\')" data-tip="Mark this person as transferred to another parish — moves them out of your active flock">Mark as Transferred</button>' +
+    '<button onclick="archiveParishioner(\'' + p.id + '\', \'reposed\')" data-tip="Record that this parishioner has reposed in the Lord — moves them to archived with eternal remembrance">Mark as Reposed</button>' +
+    '<button class="rec-delete-btn" onclick="initiateDelete(\'' + p.id + '\')" data-tip="Permanently delete this record — this cannot be undone">Delete Record</button>' +
+  '</div>';
+
+  panel.innerHTML = html;
+}
+
+function renderReadSection(p) {
+  var html = '<div class="rec-section-label">Personal</div>';
+  var fields = [
+    ['Full Name', (p.first_name || '') + ' ' + (p.last_name || '')],
+    ['Date of Birth', fmtDate(p.date_of_birth)],
+    ['Nameday Saint', p.nameday_saint],
+    ['Nameday Date', p.nameday_date],
+    ['Email', p.email],
+    ['Phone', p.phone],
+    ['Contact Preference', p.contact_pref],
+    ['Address', p.address]
+  ];
+  fields.forEach(function(f) {
+    if (f[1]) html += '<div class="rec-field"><span class="rec-field-label">' + f[0] + '</span><span class="rec-field-value">' + escHtml(f[1]) + '</span></div>';
+  });
+
+  html += '<div class="rec-section-label">Sacramental</div>';
+  html += '<div class="rec-field"><span class="rec-field-label">Status</span><span class="rec-field-value"><span class="p-card-badge p-badge-' + (p.status || 'member') + '">' + escHtml(p.status || 'member') + '</span></span></div>';
+  if (p.baptism_date) html += '<div class="rec-field"><span class="rec-field-label">Baptism Date</span><span class="rec-field-value">' + fmtDate(p.baptism_date) + '</span></div>';
+  if (p.godparents) html += '<div class="rec-field"><span class="rec-field-label">Godparents</span><span class="rec-field-value">' + escHtml(p.godparents) + '</span></div>';
+  if (p.anniversary) html += '<div class="rec-field"><span class="rec-field-label">Anniversary</span><span class="rec-field-value">' + fmtDate(p.anniversary) + '</span></div>';
+
+  html += '<div class="rec-section-label">Family</div>';
+  if (p.spouse_name) html += '<div class="rec-field"><span class="rec-field-label">Spouse</span><span class="rec-field-value">' + escHtml(p.spouse_name) + '</span></div>';
+  if (p.spouse_nameday) html += '<div class="rec-field"><span class="rec-field-label">Spouse Nameday</span><span class="rec-field-value">' + escHtml(p.spouse_nameday) + '</span></div>';
+  if (p.spouse_dob) html += '<div class="rec-field"><span class="rec-field-label">Spouse Date of Birth</span><span class="rec-field-value">' + fmtDate(p.spouse_dob) + '</span></div>';
+  if (p.spouse_godparent) html += '<div class="rec-field"><span class="rec-field-label">Spouse Godparent</span><span class="rec-field-value">' + escHtml(p.spouse_godparent) + '</span></div>';
+
+  if (p.children && Array.isArray(p.children) && p.children.length > 0) {
+    p.children.forEach(function(ch) {
+      var age = computeAge(ch.dob);
+      var line = escHtml(ch.name || '');
+      if (age !== '') line += ', age ' + age;
+      if (ch.baptismDate) line += ' &mdash; Baptized ' + fmtDate(ch.baptismDate);
+      if (ch.godparent) line += ' &mdash; Godparent: ' + escHtml(ch.godparent);
+      html += '<div class="rec-child-row">' + line + '</div>';
+    });
+  }
+
+  if (p.notes) {
+    html += '<div class="rec-section-label">Their Notes</div>';
+    html += '<div style="font-style:italic;color:var(--stone);font-size:.85rem;margin-bottom:.25rem">Their words</div>';
+    html += '<div class="rec-their-notes">' + escHtml(p.notes) + '</div>';
+  }
+
+  if (p.admin_created) {
+    html += '<div class="rec-admin-notice">This record was created manually and has no linked site account.' +
+      (p.email ? ' If this parishioner registers with ' + escHtml(p.email) + ', their account will link automatically.' : '') +
+    '</div>';
+  }
+
+  return html;
+}
+
+function renderNotesList(notes) {
+  var today = todayStr();
+  return notes.map(function(n) {
+    var resolved = n.resolved;
+    var overdue = !resolved && n.follow_up_date && n.follow_up_date < today;
+    var html = '<div class="pn-note' + (resolved ? ' pn-note-resolved' : '') + '" id="pn-note-' + n.id + '">' +
+      '<div class="pn-note-text">' + escHtml(n.note_text) + '</div>' +
+      '<div class="pn-note-meta">' + fmtDate(n.written_at) + '</div>';
+    if (n.follow_up_date && !resolved) {
+      html += '<div class="pn-followup-row">' +
+        '<span class="pn-followup-date' + (overdue ? ' pn-overdue' : '') + '">Follow up: ' + fmtDate(n.follow_up_date) + '</span>' +
+        '<button onclick="resolveNote(\'' + n.id + '\')" data-tip="Mark this follow-up as completed — it stays on the record but is no longer shown as pending">Mark Resolved \u2713</button>' +
+      '</div>';
+    }
+    if (resolved) {
+      html += '<div class="pn-resolved-label">Resolved</div>';
+    }
+    html += '</div>';
+    return html;
+  }).join('');
+}
+
+async function saveNote(parishionerId) {
+  var text = document.getElementById('pn-text').value.trim();
+  if (!text) return;
+  var followup = document.getElementById('pn-followup').value || null;
+
+  var notePayload = {
+    parishioner_id: parishionerId,
+    note_text: text,
+    follow_up_date: followup
+  };
+  // written_by must be a real auth UUID — omit in dev/bypass mode
+  if (currentUser && currentUser.id && currentUser.id !== 'dev-user') {
+    notePayload.written_by = currentUser.id;
+  }
+  var { data, error } = await _supabase.from('pastoral_notes').insert(notePayload).select().single();
+
+  if (error) { showToast('Error saving note.'); return; }
+
+  document.getElementById('pn-text').value = '';
+  document.getElementById('pn-followup').value = '';
+
+  // Prepend to notes list
+  var listEl = document.getElementById('pn-notes-list');
+  var emptyEl = listEl.querySelector('.p-empty');
+  if (emptyEl) emptyEl.remove();
+  listEl.insertAdjacentHTML('afterbegin', renderNotesList([data]));
+
+  // Update global data
+  allPastoralNotes.unshift(data);
+  renderFlockCards();
+  renderAttentionStrip(allPrayerRequests);
+  showToast('Note saved.');
+}
+
+async function resolveNote(noteId) {
+  await _supabase.from('pastoral_notes').update({ resolved: true }).eq('id', noteId);
+  var el = document.getElementById('pn-note-' + noteId);
+  if (el) {
+    el.classList.add('pn-note-resolved');
+    var fuRow = el.querySelector('.pn-followup-row');
+    if (fuRow) fuRow.remove();
+    var existingLabel = el.querySelector('.pn-resolved-label');
+    if (!existingLabel) {
+      el.insertAdjacentHTML('beforeend', '<div class="pn-resolved-label">Resolved</div>');
+    }
+  }
+  // Update global data
+  var note = allPastoralNotes.find(function(n) { return n.id === noteId; });
+  if (note) note.resolved = true;
+  renderFlockCards();
+  renderAttentionStrip(allPrayerRequests);
+  showToast('Note resolved.');
+}
+
+// ── EDIT MODE ──
+function toggleEditMode() {
+  editMode = !editMode;
+  var leftCol = document.getElementById('rec-left');
+  var btn = document.getElementById('rec-edit-btn');
+  if (!leftCol) return;
+
+  if (editMode) {
+    btn.textContent = 'Cancel Edit';
+    renderEditMode(leftCol);
+  } else {
+    btn.textContent = 'Edit Profile';
+    // Reload the record
+    openRecord(currentRecordId);
+  }
+}
+
+async function renderEditMode(container) {
+  var { data: p } = await _supabase.from('parishioners').select('*').eq('id', currentRecordId).single();
+  if (!p) return;
+
+  var html = '<div class="rec-section-label">Personal</div>';
+  html += editField('edit-first', 'First Name', p.first_name);
+  html += editField('edit-last', 'Last Name', p.last_name);
+  html += editField('edit-dob', 'Date of Birth', p.date_of_birth, 'date');
+  html += editField('edit-nsaint', 'Nameday Saint', p.nameday_saint);
+  html += editField('edit-ndate', 'Nameday Date', p.nameday_date);
+  html += editField('edit-email', 'Email', p.email, 'email');
+  html += editField('edit-phone', 'Phone', p.phone, 'tel');
+  html += '<div class="rec-field"><span class="rec-field-label">Contact Preference</span>' +
+    '<select id="edit-contactpref" class="rec-field" style="font-family:var(--f-data);font-size:.95rem;padding:.35rem .6rem;border:var(--rule-faint);border-radius:4px;width:100%">' +
+    ['Email','Phone','Either'].map(function(v) {
+      return '<option' + (p.contact_pref === v.toLowerCase() || p.contact_pref === v ? ' selected' : '') + '>' + v + '</option>';
+    }).join('') + '</select></div>';
+  html += editField('edit-address', 'Address', p.address);
+
+  html += '<div class="rec-section-label">Sacramental</div>';
+  html += '<div class="rec-field"><span class="rec-field-label">Status</span>' +
+    '<select id="edit-status" style="font-family:var(--f-data);font-size:.95rem;padding:.35rem .6rem;border:var(--rule-faint);border-radius:4px;width:100%">' +
+    ['inquirer','catechumen','baptized','member','transferred','reposed'].map(function(v) {
+      return '<option' + (p.status === v ? ' selected' : '') + '>' + v + '</option>';
+    }).join('') + '</select></div>';
+  html += editField('edit-baptism', 'Baptism Date', p.baptism_date, 'date');
+  html += editField('edit-godparents', 'Godparents', p.godparents);
+  html += editField('edit-anniversary', 'Anniversary', p.anniversary, 'date');
+
+  html += '<div class="rec-section-label">Family</div>';
+  // Family unit assignment
+  html += '<div class="rec-field"><span class="rec-field-label">Family Unit</span>' +
+    '<div style="display:flex;gap:.4rem;align-items:center">' +
+    '<select id="edit-family-unit" style="font-family:var(--f-data);font-size:.92rem;padding:.3rem .6rem;border:var(--rule-faint);border-radius:4px;flex:1">' +
+    '<option value="">None</option>' +
+    allFamilyUnits.map(function(fu) {
+      return '<option value="' + fu.id + '"' + (p.family_unit_id === fu.id ? ' selected' : '') + '>' + escHtml(fu.family_name) + '</option>';
+    }).join('') +
+    '</select>' +
+    '<button type="button" onclick="showNewFamilyInput()" style="font-family:var(--f-data);font-size:11px;letter-spacing:.03em;text-transform:uppercase;color:var(--maroon);background:none;border:1px solid var(--maroon);border-radius:4px;padding:.3rem .7rem;cursor:pointer;white-space:nowrap">+ New</button>' +
+    '</div>' +
+    '<div id="new-family-row" style="display:none;margin-top:.35rem">' +
+      '<div style="display:flex;gap:.4rem">' +
+        '<input id="new-family-name" placeholder="Family name" style="font-family:var(--f-data);font-size:.9rem;padding:.3rem .55rem;border:var(--rule-faint);border-radius:4px;flex:1;outline:none">' +
+        '<button type="button" onclick="createFamilyUnit()" style="font-family:var(--f-data);font-size:11px;letter-spacing:.03em;text-transform:uppercase;background:var(--maroon);color:var(--vellum);border:none;border-radius:4px;padding:.3rem .9rem;cursor:pointer">Create</button>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+  html += editField('edit-spouse', 'Spouse Name', p.spouse_name);
+  html += editField('edit-spousenameday', 'Spouse Nameday', p.spouse_nameday);
+  html += editField('edit-spousedob', 'Spouse Date of Birth', p.spouse_dob, 'date');
+  html += editField('edit-spousegp', 'Spouse Godparent', p.spouse_godparent);
+
+  // Children
+  var editChildren = Array.isArray(p.children) ? p.children : [];
+  html += '<div class="rec-section-label">Children</div>';
+  html += '<div id="edit-children-list">';
+  editChildren.forEach(function(ch, i) {
+    html += '<div class="edit-child-row" id="edit-child-row-' + i + '">' +
+      '<input id="edit-child-name-' + i + '" placeholder="Name" value="' + escHtml(ch.name || '') + '" style="flex:2">' +
+      '<input id="edit-child-dob-' + i + '" type="date" title="Date of birth" value="' + escHtml(ch.dob || '') + '" style="flex:1">' +
+      '<input id="edit-child-baptism-' + i + '" type="date" title="Baptism date" value="' + escHtml(ch.baptismDate || '') + '" style="flex:1">' +
+      '<input id="edit-child-gp-' + i + '" placeholder="Godparent" value="' + escHtml(ch.godparent || '') + '" style="flex:2">' +
+      '<button type="button" onclick="removeEditChild(' + i + ')" style="background:none;border:none;color:var(--stone);cursor:pointer;font-size:1.1rem;padding:0 .25rem">&times;</button>' +
+    '</div>';
+  });
+  html += '</div>';
+  html += '<button type="button" onclick="addEditChild()" style="font-family:var(--f-data);font-size:11px;letter-spacing:.03em;text-transform:uppercase;color:var(--maroon);background:none;border:1px solid var(--maroon);border-radius:4px;padding:.3rem .9rem;cursor:pointer;margin-top:.35rem">+ Add Child</button>';
+
+  html += '<button class="rec-save-btn" onclick="saveProfile()">Save Changes</button>';
+
+  // Keep journey and prayer rule visible below
+  container.innerHTML = html;
+}
+
+function editField(id, label, value, type) {
+  type = type || 'text';
+  return '<div class="rec-field"><span class="rec-field-label">' + label + '</span>' +
+    '<input id="' + id + '" type="' + type + '" value="' + escHtml(value || '') + '"></div>';
+}
+
+function addEditChild() {
+  var list = document.getElementById('edit-children-list');
+  if (!list) return;
+  var i = Date.now(); // unique key
+  var row = document.createElement('div');
+  row.className = 'edit-child-row';
+  row.id = 'edit-child-row-' + i;
+  row.innerHTML =
+    '<input id="edit-child-name-' + i + '" placeholder="Name" style="flex:2">' +
+    '<input id="edit-child-dob-' + i + '" type="date" title="Date of birth" style="flex:1">' +
+    '<input id="edit-child-baptism-' + i + '" type="date" title="Baptism date" style="flex:1">' +
+    '<input id="edit-child-gp-' + i + '" placeholder="Godparent" style="flex:2">' +
+    '<button type="button" onclick="removeEditChild(\'' + i + '\')" style="background:none;border:none;color:var(--stone);cursor:pointer;font-size:1.1rem;padding:0 .25rem">&times;</button>';
+  list.appendChild(row);
+}
+
+function removeEditChild(i) {
+  var row = document.getElementById('edit-child-row-' + i);
+  if (row) row.remove();
+}
+
+function showNewFamilyInput() {
+  var row = document.getElementById('new-family-row');
+  if (!row) return;
+  row.style.display = row.style.display === 'none' ? 'block' : 'none';
+  if (row.style.display === 'block') {
+    var inp = document.getElementById('new-family-name');
+    if (inp) inp.focus();
+  }
+}
+
+async function createFamilyUnit() {
+  var nameEl = document.getElementById('new-family-name');
+  var name = nameEl ? nameEl.value.trim() : '';
+  if (!name) { showToast('Enter a family name.'); return; }
+  var { data, error } = await _supabase.from('family_units').insert({ family_name: name }).select().single();
+  if (error) { showToast('Error creating family unit.'); return; }
+  allFamilyUnits.push(data);
+  // Add to select and choose it
+  var sel = document.getElementById('edit-family-unit');
+  if (sel) {
+    var opt = document.createElement('option');
+    opt.value = data.id;
+    opt.textContent = data.family_name;
+    opt.selected = true;
+    sel.appendChild(opt);
+  }
+  var row = document.getElementById('new-family-row');
+  if (row) row.style.display = 'none';
+  showToast('Family unit created.');
+}
+
+async function saveProfile() {
+  var updates = {
+    first_name: document.getElementById('edit-first').value.trim(),
+    last_name: document.getElementById('edit-last').value.trim(),
+    date_of_birth: document.getElementById('edit-dob').value || null,
+    nameday_saint: document.getElementById('edit-nsaint').value.trim(),
+    nameday_date: document.getElementById('edit-ndate').value.trim(),
+    email: document.getElementById('edit-email').value.trim(),
+    phone: document.getElementById('edit-phone').value.trim(),
+    contact_pref: document.getElementById('edit-contactpref').value,
+    address: document.getElementById('edit-address').value.trim(),
+    status: document.getElementById('edit-status').value,
+    baptism_date: document.getElementById('edit-baptism').value || null,
+    godparents: document.getElementById('edit-godparents').value.trim(),
+    anniversary: document.getElementById('edit-anniversary').value || null,
+    spouse_name: document.getElementById('edit-spouse').value.trim(),
+    spouse_nameday: document.getElementById('edit-spousenameday').value.trim(),
+    spouse_dob: document.getElementById('edit-spousedob').value || null,
+    spouse_godparent: document.getElementById('edit-spousegp').value.trim(),
+    updated_at: new Date().toISOString()
+  };
+
+  // Collect children from edit rows
+  var editChildRows = document.querySelectorAll('.edit-child-row:not([data-removed])');
+  var editedChildren = [];
+  editChildRows.forEach(function(row) {
+    var i = row.id.replace('edit-child-row-', '');
+    var nameEl = document.getElementById('edit-child-name-' + i);
+    if (nameEl && nameEl.value.trim()) {
+      editedChildren.push({
+        name: nameEl.value.trim(),
+        dob: (document.getElementById('edit-child-dob-' + i) || {}).value || '',
+        baptismDate: (document.getElementById('edit-child-baptism-' + i) || {}).value || '',
+        godparent: (document.getElementById('edit-child-gp-' + i) || {}).value.trim() || '',
+        nameDay: '', patron: ''
+      });
+    }
+  });
+  updates.children = editedChildren.length > 0 ? editedChildren : null;
+
+  var fuEl = document.getElementById('edit-family-unit');
+  updates.family_unit_id = fuEl && fuEl.value ? parseInt(fuEl.value) : null;
+
+  var { error } = await _supabase.from('parishioners').update(updates).eq('id', currentRecordId);
+  if (error) { showToast('Error saving changes.'); return; }
+
+  // Update local data
+  var idx = allParishioners.findIndex(function(p) { return p.id === currentRecordId; });
+  if (idx >= 0) Object.assign(allParishioners[idx], updates);
+
+  editMode = false;
+  openRecord(currentRecordId);
+  renderFlockCards();
+  showToast('Profile updated.');
+}
+
+function emailParishioner(email) {
+  window.location.href = 'mailto:' + email;
+}
+
+async function toggleFlag(id, current) {
+  var newVal = !current;
+  await _supabase.from('parishioners').update({ flagged: newVal }).eq('id', id);
+  var idx = allParishioners.findIndex(function(p) { return p.id === id; });
+  if (idx >= 0) allParishioners[idx].flagged = newVal;
+  openRecord(id);
+  renderFlockCards();
+  showToast(newVal ? 'Parishioner flagged.' : 'Flag removed.');
+}
+
+function archiveParishioner(id, type) {
+  var footer = document.getElementById('rec-footer');
+  var existing = footer.querySelector('.rec-archive-confirm');
+  if (existing) { existing.remove(); return; }
+  clearFooterConfirms();
+  var label = type === 'reposed' ? 'Date of Repose' : 'Transfer Date';
+  var div = document.createElement('div');
+  div.className = 'rec-archive-confirm rec-delete-confirm';
+  div.innerHTML = '<p>' + (type === 'reposed' ? 'Record date of repose:' : 'Record transfer date:') + '</p>' +
+    '<input type="date" id="archive-date-input" style="font-family:var(--f-data);font-size:.92rem;padding:.3rem .6rem;border:var(--rule-faint);border-radius:4px;margin-bottom:.5rem">' +
+    '<div style="display:flex;gap:.5rem">' +
+      '<button onclick="this.closest(\'.rec-archive-confirm\').remove()">Cancel</button>' +
+      '<button class="rec-delete-final" onclick="confirmArchive(\'' + id + '\',\'' + type + '\')">Confirm</button>' +
+    '</div>';
+  footer.appendChild(div);
+}
+
+async function confirmArchive(id, type) {
+  var dateVal = (document.getElementById('archive-date-input') || {}).value;
+  var updates = { status: type, updated_at: new Date().toISOString() };
+  if (type === 'transferred') updates.transferred_date = dateVal || null;
+  if (type === 'reposed') updates.repose_date = dateVal || null;
+
+  await _supabase.from('parishioners').update(updates).eq('id', id);
+  var idx = allParishioners.findIndex(function(p) { return p.id === id; });
+  if (idx >= 0) Object.assign(allParishioners[idx], updates);
+  closeAllPanels();
+  renderFlockCards();
+  showToast('Status updated to ' + type + '.');
+}
+
+function clearFooterConfirms() {
+  var footer = document.getElementById('rec-footer');
+  if (footer) footer.querySelectorAll('.rec-delete-confirm, .rec-archive-confirm').forEach(function(el) { el.remove(); });
+}
+
+function initiateDelete(id) {
+  var footer = document.getElementById('rec-footer');
+  var existing = footer.querySelector('.rec-delete-confirm');
+  if (existing) { existing.remove(); return; }
+  clearFooterConfirms();
+  var div = document.createElement('div');
+  div.className = 'rec-delete-confirm';
+  div.innerHTML = '<p>This will permanently remove this record and all associated data from the site. Pastoral notes will also be deleted. Make sure you have what you need before continuing.</p>' +
+    '<button onclick="this.parentElement.remove()">Cancel</button>' +
+    '<button class="rec-delete-final" onclick="confirmDelete(\'' + id + '\')">Delete Permanently</button>';
+  footer.appendChild(div);
+}
+
+async function confirmDelete(id) {
+  await _supabase.from('parishioners').delete().eq('id', id);
+  allParishioners = allParishioners.filter(function(p) { return p.id !== id; });
+  allPastoralNotes = allPastoralNotes.filter(function(n) { return n.parishioner_id !== id; });
+  closeAllPanels();
+  renderFlockCards();
+  showToast('Record deleted.');
+}
+
+// ── ADD PARISHIONER PANEL ──
+function openAddPanel() {
+  var panel = document.getElementById('add-panel');
+  panel.innerHTML = '<div style="position:relative">' +
+    '<button class="add-panel-close" onclick="closeAllPanels()" data-tip="Close without saving">&times;</button>' +
+    '<div class="add-panel-header">' +
+      '<h1>Add Parishioner</h1>' +
+      '<p>Fill in what you know. Nothing is required except a name.</p>' +
+    '</div>' +
+    '<div class="add-panel-body">' +
+      '<div class="add-row">' +
+        '<div class="add-field"><label>First Name</label><input id="add-first" required></div>' +
+        '<div class="add-field"><label>Last Name</label><input id="add-last" required></div>' +
+      '</div>' +
+      '<div class="add-row full"><div class="add-field"><label>Status</label>' +
+        '<div class="add-status-pills" id="add-status-pills">' +
+          '<button class="add-status-pill" data-val="inquirer" data-tip="Exploring Orthodoxy — not yet in formal catechesis">Inquirer</button>' +
+          '<button class="add-status-pill" data-val="catechumen" data-tip="Formally received as a catechumen, preparing for baptism or chrismation">Catechumen</button>' +
+          '<button class="add-status-pill" data-val="baptized" data-tip="Baptized and chrismated into the Church">Baptized &amp; Chrismated</button>' +
+          '<button class="add-status-pill active" data-val="member" data-tip="Full member of the parish">Member</button>' +
+        '</div>' +
+      '</div></div>' +
+      '<div class="add-row">' +
+        '<div class="add-field"><label>Email</label><input id="add-email" type="email"></div>' +
+        '<div class="add-field"><label>Phone</label><input id="add-phone" type="tel"></div>' +
+      '</div>' +
+      '<div class="add-row full"><div class="add-field"><label>Contact Preference</label>' +
+        '<select id="add-contactpref"><option>Email</option><option>Phone</option><option>Either</option></select>' +
+      '</div></div>' +
+      '<div class="add-row">' +
+        '<div class="add-field"><label>Baptism Date</label><input id="add-baptism" type="date"></div>' +
+        '<div class="add-field"><label>Godparents</label><input id="add-godparents"></div>' +
+      '</div>' +
+      '<div class="add-row">' +
+        '<div class="add-field"><label>Anniversary</label><input id="add-anniversary" type="date"></div>' +
+        '<div class="add-field"><label>Spouse Name</label><input id="add-spouse"></div>' +
+      '</div>' +
+      '<div class="add-row full"><div class="add-field"><label>Number of Children</label>' +
+        '<select id="add-numchildren" onchange="renderChildInputs()">' +
+          '<option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option>' +
+        '</select>' +
+      '</div></div>' +
+      '<div id="add-children-container"></div>' +
+      '<div class="add-row full"><div class="add-field"><label>First Note</label>' +
+        '<textarea id="add-note" rows="3" placeholder="Add your first note about this person..."></textarea>' +
+      '</div></div>' +
+      '<div class="add-row full"><div class="add-field"><label>Follow-up by</label>' +
+        '<input id="add-followup" type="date">' +
+      '</div></div>' +
+    '</div>' +
+    '<div class="add-panel-footer">' +
+      '<button class="add-save-btn" onclick="createManualRecord()" data-tip="Save this record and add the person to your flock">Save Record</button>' +
+      '<button class="add-cancel-btn" onclick="closeAllPanels()" data-tip="Discard this record and close the panel">Cancel</button>' +
+    '</div>' +
+  '</div>';
+
+  // Bind status pills
+  panel.querySelectorAll('.add-status-pill').forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      panel.querySelectorAll('.add-status-pill').forEach(function(p) { p.classList.remove('active'); });
+      pill.classList.add('active');
+    });
+  });
+
+  openPanel('add-panel');
+}
+
+function renderChildInputs() {
+  var n = parseInt(document.getElementById('add-numchildren').value) || 0;
+  var container = document.getElementById('add-children-container');
+  if (n === 0) { container.innerHTML = ''; return; }
+  var html = '<div class="add-children-inputs">';
+  for (var i = 0; i < n; i++) {
+    html += '<input id="add-child-' + i + '" placeholder="Child ' + (i + 1) + ' name">';
+  }
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+async function createManualRecord() {
+  var first = document.getElementById('add-first').value.trim();
+  var last = document.getElementById('add-last').value.trim();
+  if (!first || !last) { showToast('First and last name are required.'); return; }
+
+  var activePill = document.querySelector('.add-status-pill.active');
+  var status = activePill ? activePill.getAttribute('data-val') : 'member';
+
+  var numChildren = parseInt(document.getElementById('add-numchildren').value) || 0;
+  var children = [];
+  for (var i = 0; i < numChildren; i++) {
+    var input = document.getElementById('add-child-' + i);
+    if (input && input.value.trim()) {
+      children.push({ name: input.value.trim(), dob: '', nameDay: '', patron: '', baptismDate: '', godparent: '' });
+    }
+  }
+
+  var parishioner = {
+    first_name: first,
+    last_name: last,
+    status: status,
+    email: document.getElementById('add-email').value.trim() || null,
+    phone: document.getElementById('add-phone').value.trim() || null,
+    contact_pref: document.getElementById('add-contactpref').value || null,
+    baptism_date: document.getElementById('add-baptism').value || null,
+    godparents: document.getElementById('add-godparents').value.trim() || null,
+    anniversary: document.getElementById('add-anniversary').value || null,
+    spouse_name: document.getElementById('add-spouse').value.trim() || null,
+    children: children.length > 0 ? children : null,
+    admin_created: true,
+    user_id: null,
+    updated_at: new Date().toISOString()
+  };
+
+  var { data, error } = await _supabase.from('parishioners').insert(parishioner).select().single();
+  if (error) { showToast('Error creating record.'); return; }
+
+  var noteText = document.getElementById('add-note').value.trim();
+  if (noteText) {
+    var followup = document.getElementById('add-followup').value || null;
+    await _supabase.from('pastoral_notes').insert({
+      parishioner_id: data.id,
+      note_text: noteText,
+      follow_up_date: followup,
+      written_by: currentUser.id
+    });
+  }
+
+  allParishioners.push(data);
+  closeAllPanels();
+  renderFlockCards();
+  showToast('Record created.');
+}
+
+// ── DRAWER TOGGLE ──
+function toggleDrawer(card) {
+  var drawer = card.nextElementSibling;
+  if (!drawer || !drawer.classList.contains('p-card-drawer')) return;
+  var isOpen = drawer.classList.contains('open');
+  // Close all open drawers first
+  document.querySelectorAll('.p-card-drawer.open').forEach(function(d) {
+    d.classList.remove('open');
+  });
+  document.querySelectorAll('.p-card .p-card-arrow').forEach(function(a) {
+    a.style.transform = '';
+  });
+  if (!isOpen) {
+    drawer.classList.add('open');
+    var arrow = card.querySelector('.p-card-arrow');
+    if (arrow) arrow.style.transform = 'rotate(90deg)';
+  }
+}
+
+// ── NAV: MOBILE DRAWER ──
+function openDrawer() {
+  document.getElementById('nav-drawer').classList.add('open');
+  document.getElementById('nav-overlay').classList.add('open');
+  document.getElementById('nav-hamburger').classList.add('open');
+}
+function closeDrawer() {
+  document.getElementById('nav-drawer').classList.remove('open');
+  document.getElementById('nav-overlay').classList.remove('open');
+  document.getElementById('nav-hamburger').classList.remove('open');
+}
+function drToggle(head) {
+  var section = head.parentElement;
+  section.classList.toggle('open');
+  var toggle = head.querySelector('.dr-section-toggle');
+  if (toggle) toggle.textContent = section.classList.contains('open') ? '-' : '+';
+}
+function toggleMyParish(e) {
+  e.stopPropagation();
+  var panel = document.getElementById('nav-mp-panel');
+  if (panel) panel.classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+  var mpPanel = document.getElementById('nav-mp-panel');
+  var mpBtn = document.querySelector('.nav-my-parish-btn');
+  if (mpPanel && mpBtn && !mpBtn.contains(e.target)) {
+    mpPanel.classList.remove('open');
+  }
+});
+
+// ── NAV: MEGA PANEL HOVER ──
+(function() {
+  var navItems = document.querySelectorAll('[data-mega]');
+  var currentPanel = null;
+  var leaveTimer = null;
+
+  function showMega(id) {
+    if (leaveTimer) { clearTimeout(leaveTimer); leaveTimer = null; }
+    if (currentPanel && currentPanel.id !== id) currentPanel.classList.remove('mega-visible');
+    currentPanel = document.getElementById(id);
+    if (currentPanel) currentPanel.classList.add('mega-visible');
+  }
+  function hideMega() {
+    leaveTimer = setTimeout(function() {
+      if (currentPanel) { currentPanel.classList.remove('mega-visible'); currentPanel = null; }
+    }, 120);
+  }
+
+  navItems.forEach(function(item) {
+    item.addEventListener('mouseenter', function() { showMega(item.getAttribute('data-mega')); });
+    item.addEventListener('mouseleave', hideMega);
+  });
+  document.querySelectorAll('.mega-panel').forEach(function(panel) {
+    panel.addEventListener('mouseenter', function() {
+      if (leaveTimer) { clearTimeout(leaveTimer); leaveTimer = null; }
+    });
+    panel.addEventListener('mouseleave', hideMega);
+  });
+})();
+
+// ── INIT ──
+initAuth();
+</script>
+</body>
+</html>
