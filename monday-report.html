@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resonance — Monday Report #001</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='28' font-size='28'>◆</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --ff-display:'Fraunces',serif;--ff-body:'Instrument Sans',sans-serif;--ff-mono:'JetBrains Mono',monospace;
+  --radius:12px;--radius-lg:16px;
+  --teal:#14b8a6;--teal-rgb:20,184,166;
+  --green:#34d399;--green-rgb:52,211,153;
+  --amber:#fbbf24;--amber-rgb:251,191,36;
+  --red:#f87171;--red-rgb:248,113,113;
+  --blue:#60a5fa;--blue-rgb:96,165,250;
+  --ease:cubic-bezier(.4,0,.2,1);--speed:.3s;
+}
+[data-theme="dark"]{
+  --bg:#070710;--bg-1:#0d0e18;--bg-2:#131520;--bg-3:#1b1d2c;
+  --surface:#13141f;--surface-h:#1a1c2b;
+  --border:rgba(255,255,255,.06);--border-h:rgba(255,255,255,.12);
+  --text-0:#f2f2fa;--text-1:#d0d2e4;--text-2:#7e82a0;--text-3:#4a4e68;
+  --shadow:0 2px 8px rgba(0,0,0,.4),0 12px 40px rgba(0,0,0,.25);
+  --glow:0 0 60px -10px rgba(var(--teal-rgb),.08);
+}
+[data-theme="light"]{
+  --bg:#f0f1f5;--bg-1:#ffffff;--bg-2:#ffffff;--bg-3:#ebedf2;
+  --surface:#ffffff;--surface-h:#f7f8fb;
+  --border:rgba(0,0,0,.07);--border-h:rgba(0,0,0,.13);
+  --text-0:#0f1019;--text-1:#1f2133;--text-2:#5c5f78;--text-3:#93969f;
+  --shadow:0 2px 8px rgba(0,0,0,.05),0 12px 40px rgba(0,0,0,.04);
+  --glow:none;
+  --teal:#0d9488;--green:#059669;--amber:#d97706;--red:#dc2626;--blue:#2563eb;
+}
+html{font-size:16px}
+body{background:var(--bg);color:var(--text-1);font-family:var(--ff-body);line-height:1.55;min-height:100vh;transition:background var(--speed) var(--ease),color var(--speed) var(--ease)}
+
+.shell{max-width:1280px;margin:0 auto;padding:32px 28px 100px}
+
+/* ── Header ── */
+.header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:36px;flex-wrap:wrap;gap:16px}
+.header-left{}
+.logo{font-family:var(--ff-display);font-size:1.3rem;font-weight:400;color:var(--text-0);letter-spacing:-.02em}
+.logo em{font-style:italic;font-weight:300;color:var(--teal)}
+.report-id{font-family:var(--ff-mono);font-size:.7rem;color:var(--text-3);margin-top:4px;letter-spacing:.03em}
+.header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.chip{font-family:var(--ff-mono);font-size:.65rem;color:var(--text-3);background:var(--bg-3);border:.5px solid var(--border);border-radius:100px;padding:5px 14px;transition:all var(--speed) var(--ease)}
+.chip-date{color:var(--teal);border-color:rgba(var(--teal-rgb),.2);background:rgba(var(--teal-rgb),.06)}
+.toggle{width:50px;height:26px;border-radius:13px;background:var(--bg-3);border:.5px solid var(--border);cursor:pointer;position:relative;transition:all var(--speed) var(--ease);flex-shrink:0}
+.toggle::after{content:'';position:absolute;top:3px;width:20px;height:20px;border-radius:50%;transition:all var(--speed) var(--ease)}
+[data-theme="dark"] .toggle::after{left:27px;background:#fbbf24}
+[data-theme="light"] .toggle::after{left:3px;background:#374151}
+
+/* ── Stoplight Bar ── */
+.stoplight{display:flex;gap:10px;margin-bottom:28px;flex-wrap:wrap;align-items:center}
+.sl{display:flex;align-items:center;gap:6px;font-family:var(--ff-mono);font-size:.75rem;padding:7px 16px;border-radius:10px}
+.sl-g{color:var(--green);background:rgba(var(--green-rgb),.08);border:.5px solid rgba(var(--green-rgb),.18)}
+.sl-a{color:var(--amber);background:rgba(var(--amber-rgb),.08);border:.5px solid rgba(var(--amber-rgb),.18)}
+.sl-r{color:var(--red);background:rgba(var(--red-rgb),.08);border:.5px solid rgba(var(--red-rgb),.18)}
+.sl b{font-size:1.1rem}
+
+/* ── Nav Tabs ── */
+.tabs{display:flex;gap:4px;margin-bottom:24px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{font-family:var(--ff-body);font-size:.78rem;font-weight:600;color:var(--text-3);background:rgba(255,255,255,.02);border:.5px solid var(--border);border-radius:100px;padding:9px 20px;cursor:pointer;white-space:nowrap;transition:all .2s var(--ease);flex-shrink:0}
+.tab:hover{background:rgba(var(--teal-rgb),.06);color:var(--text-2);border-color:rgba(var(--teal-rgb),.18)}
+.tab.on{background:rgba(var(--teal-rgb),.1);color:var(--teal);border-color:rgba(var(--teal-rgb),.3)}
+
+/* ── Panels ── */
+.panel{display:none;animation:up .35s var(--ease)}
+.panel.on{display:block}
+@keyframes up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ── Stat Cards ── */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:24px}
+.stat{background:var(--bg-2);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:22px 24px;position:relative;overflow:hidden;transition:all var(--speed) var(--ease);box-shadow:var(--shadow)}
+.stat:hover{transform:translateY(-2px);border-color:var(--border-h)}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px}
+.stat.c-r::before{background:var(--red)}.stat.c-g::before{background:var(--green)}
+.stat.c-a::before{background:var(--amber)}.stat.c-t::before{background:var(--teal)}
+.stat-label{font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px}
+.stat-val{font-family:var(--ff-display);font-size:1.9rem;font-weight:300;color:var(--text-0);letter-spacing:-.03em}
+.stat-sub{font-family:var(--ff-mono);font-size:.68rem;margin-top:8px}
+.stat-sub.ok{color:var(--green)}.stat-sub.warn{color:var(--amber)}.stat-sub.bad{color:var(--red)}
+
+/* ── Section Label ── */
+.sec{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin:30px 0 14px;display:flex;align-items:center;gap:12px}
+.sec::after{content:'';flex:1;height:.5px;background:var(--border)}
+
+/* ── Cards / Tables ── */
+.card{background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);transition:all var(--speed) var(--ease);margin-bottom:16px}
+.card-head{padding:18px 24px;border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-family:var(--ff-display);font-size:1.05rem;font-weight:400;color:var(--text-0)}
+.card-count{font-family:var(--ff-mono);font-size:.68rem;color:var(--text-3)}
+table{width:100%;border-collapse:collapse}
+thead th{font-size:.62rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text-3);text-align:left;padding:11px 20px;background:var(--bg-3);border-bottom:.5px solid var(--border);white-space:nowrap;position:sticky;top:0;transition:background var(--speed) var(--ease)}
+tbody td{font-size:.82rem;color:var(--text-2);padding:14px 20px;border-bottom:.5px solid rgba(255,255,255,.025);vertical-align:top;transition:all var(--speed) var(--ease)}
+tbody tr{transition:background .15s}
+tbody tr:hover{background:var(--surface-h)}
+tbody tr:last-child td{border-bottom:none}
+td.name{color:var(--text-0);font-weight:600}
+td.mono{font-family:var(--ff-mono);font-size:.72rem}
+td.note{max-width:340px;font-size:.78rem;line-height:1.5}
+
+/* ── Badges ── */
+.b{display:inline-flex;align-items:center;gap:5px;font-family:var(--ff-mono);font-size:.62rem;font-weight:500;padding:4px 11px;border-radius:100px;white-space:nowrap}
+.b::before{content:'';width:6px;height:6px;border-radius:50%}
+.bg{color:var(--green);background:rgba(var(--green-rgb),.1);border:.5px solid rgba(var(--green-rgb),.18)}.bg::before{background:var(--green)}
+.ba{color:var(--amber);background:rgba(var(--amber-rgb),.1);border:.5px solid rgba(var(--amber-rgb),.18)}.ba::before{background:var(--amber)}
+.br{color:var(--red);background:rgba(var(--red-rgb),.1);border:.5px solid rgba(var(--red-rgb),.18)}.br::before{background:var(--red)}
+.bt{color:var(--teal);background:rgba(var(--teal-rgb),.1);border:.5px solid rgba(var(--teal-rgb),.18)}.bt::before{background:var(--teal)}
+
+/* ── Flag Cards ── */
+.flag{border-radius:var(--radius);padding:18px 22px;margin-bottom:10px}
+.flag-r{background:rgba(var(--red-rgb),.06);border:.5px solid rgba(var(--red-rgb),.15)}
+.flag-a{background:rgba(var(--amber-rgb),.06);border:.5px solid rgba(var(--amber-rgb),.15)}
+.flag-title{font-size:.85rem;font-weight:600;margin-bottom:5px}
+.flag-r .flag-title{color:var(--red)}.flag-a .flag-title{color:var(--amber)}
+.flag-body{font-size:.78rem;color:var(--text-2);line-height:1.55}
+.flag-meta{font-family:var(--ff-mono);font-size:.65rem;color:var(--text-3);margin-top:8px;display:flex;gap:16px;flex-wrap:wrap}
+
+/* ── Green List ── */
+.green-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:.5px solid rgba(255,255,255,.025)}
+.green-item:last-child{border-bottom:none}
+.green-dot{width:8px;height:8px;border-radius:50%;background:var(--green);margin-top:5px;flex-shrink:0}
+.green-text{font-size:.82rem;color:var(--text-2)}
+
+/* ── Donut Chart (CSS) ── */
+.donut-wrap{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.donut{width:160px;height:160px;border-radius:50%;position:relative;flex-shrink:0}
+.donut-center{position:absolute;inset:30px;border-radius:50%;background:var(--bg-2);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.donut-center-val{font-family:var(--ff-display);font-size:1.3rem;font-weight:300;color:var(--text-0)}
+.donut-center-lbl{font-size:.6rem;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em}
+.donut-legend{display:flex;flex-direction:column;gap:6px;flex:1;min-width:200px}
+.leg-row{display:flex;align-items:center;gap:8px;font-size:.75rem;color:var(--text-2)}
+.leg-sq{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+
+/* ── Responsive ── */
+@media(max-width:700px){
+  .stats{grid-template-columns:1fr 1fr}
+  .header{flex-direction:column}
+  table{min-width:650px}
+  .card{overflow-x:auto}
+}
+@media print{
+  body{background:#fff;color:#000}
+  .toggle,.tabs{display:none!important}
+  .panel{display:block!important}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="header">
+    <div class="header-left">
+      <div class="logo">Resonance<em>.</em></div>
+      <div class="report-id">Monday C-Suite Report · #001</div>
+    </div>
+    <div class="header-right">
+      <span class="chip chip-date">April 13, 2026</span>
+      <span class="chip">Owner: Ray</span>
+      <span class="chip">Source: Master Tracker</span>
+      <div class="toggle" onclick="toggleTheme()" title="Toggle theme"></div>
+    </div>
+  </div>
+
+  <div class="stoplight">
+    <div class="sl sl-g"><b>8</b> Green</div>
+    <div class="sl sl-a"><b>6</b> Amber</div>
+    <div class="sl sl-r"><b>4</b> Red</div>
+    <span style="font-family:var(--ff-mono);font-size:.65rem;color:var(--text-3);margin-left:6px">18 items tracked</span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" onclick="go('fin')">Financial</button>
+    <button class="tab" onclick="go('rev')">Revenue</button>
+    <button class="tab" onclick="go('exp')">Expenses</button>
+    <button class="tab" onclick="go('del')">Clients & Delivery</button>
+    <button class="tab" onclick="go('act')">Action Items</button>
+    <button class="tab" onclick="go('flags')">C-Suite Flags</button>
+  </div>
+
+  <!-- ═══════ FINANCIAL ═══════ -->
+  <div class="panel on" id="fin">
+    <div class="stats">
+      <div class="stat c-r"><div class="stat-label">Cash in Bank</div><div class="stat-val">$10,237</div><div class="stat-sub bad">Chase balance as of Apr 13</div></div>
+      <div class="stat c-r"><div class="stat-label">Nissi Liability</div><div class="stat-val">–$43,360</div><div class="stat-sub bad">2 months unpaid (Jan + Feb at $20,120 + carry)</div></div>
+      <div class="stat c-r"><div class="stat-label">True Net Cash</div><div class="stat-val">–$13,462</div><div class="stat-sub bad">Bank minus contractor obligation</div></div>
+      <div class="stat c-a"><div class="stat-label">Monthly Burn</div><div class="stat-val">$29,000</div><div class="stat-sub warn">Chase + Brex combined · $1K over budget</div></div>
+    </div>
+    <div class="stats">
+      <div class="stat c-a"><div class="stat-label">Runway — Base</div><div class="stat-val">8.4 mo</div><div class="stat-sub warn">3% MRR growth · flat burn · +$2,750 new</div></div>
+      <div class="stat c-r"><div class="stat-label">Runway — Conservative</div><div class="stat-val">4.1 mo</div><div class="stat-sub bad">Flat MRR · 2% burn creep · cash zero Aug '26</div></div>
+      <div class="stat c-g"><div class="stat-label">Runway — Optimistic</div><div class="stat-val">18+ mo</div><div class="stat-sub ok">8% growth · 5% burn cut · +$8K new rev</div></div>
+      <div class="stat c-g"><div class="stat-label">Capchase Debt</div><div class="stat-val">$0</div><div class="stat-sub ok">Fully repaid May 2025</div></div>
+    </div>
+
+    <div class="sec">MRR Overview</div>
+    <div class="card" style="padding:28px">
+      <div class="donut-wrap">
+        <div class="donut" style="background:conic-gradient(#14b8a6 0% 19.7%,#0d6e64 19.7% 36.5%,#1e6b5e 36.5% 53.3%,#3b82f6 53.3% 66.1%,#f59e0b 66.1% 79.3%,#6b7280 79.3% 85.7%,#94a3b8 85.7% 100%)">
+          <div class="donut-center"><div class="donut-center-val">$20,833</div><div class="donut-center-lbl">Monthly MRR</div></div>
+        </div>
+        <div class="donut-legend">
+          <div class="leg-row"><div class="leg-sq" style="background:#14b8a6"></div>FEC / NYCHA — $4,112 (19.7%)</div>
+          <div class="leg-row"><div class="leg-sq" style="background:#0d6e64"></div>Wollman Rink — $3,500 (16.8%)</div>
+          <div class="leg-row"><div class="leg-sq" style="background:#1e6b5e"></div>Heavy Metal — $3,500 (16.8%)</div>
+          <div class="leg-row"><div class="leg-sq" style="background:#3b82f6"></div>Kalel — $2,750 (13.2%)</div>
+          <div class="leg-row"><div class="leg-sq" style="background:#f59e0b"></div>Merola/SFO — $1,333 (6.4%)</div>
+          <div class="leg-row"><div class="leg-sq" style="background:#6b7280"></div>Mid-tier (Laffont, DE Theatre, Tuxedo, Lindemann) — $3,809 (18.3%)</div>
+          <div class="leg-row"><div class="leg-sq" style="background:#94a3b8"></div>Tail (Symbolic, AES, ICDT) — $1,830 (8.8%)</div>
+          <div style="margin-top:8px;font-family:var(--ff-mono);font-size:.62rem;color:var(--text-3)">HOU West Brighton ($38,250/yr annual draw) excluded from MRR</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ REVENUE ═══════ -->
+  <div class="panel" id="rev">
+    <div class="stats">
+      <div class="stat c-t"><div class="stat-label">MRR</div><div class="stat-val">$20,833</div><div class="stat-sub ok">12 monthly clients</div></div>
+      <div class="stat c-t"><div class="stat-label">ARR</div><div class="stat-val">$288,254</div><div class="stat-sub ok">Includes HOU annual draw</div></div>
+      <div class="stat c-a"><div class="stat-label">HOU Annual Draw</div><div class="stat-val">$38,250</div><div class="stat-sub warn">Last draw Aug 2025 · contract ends May 2026</div></div>
+      <div class="stat c-t"><div class="stat-label">Active Clients</div><div class="stat-val">13</div><div class="stat-sub ok">Pipeline: 3i ($1,600/mo potential)</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-title">Client Revenue Detail</div><div class="card-count">13 accounts</div></div>
+      <table>
+        <thead><tr><th>Client</th><th>MRR</th><th>ARR</th><th>Last Invoice</th><th>Status</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td class="name">FEC / NYCHA</td><td class="mono">$4,112</td><td class="mono">$49,344</td><td class="mono">Mar 2026</td><td><span class="b bg">Green</span></td><td class="note">2,056 HH × $2/unit. Strongest account.</td></tr>
+          <tr><td class="name">Wollman Rink</td><td class="mono">$3,500</td><td class="mono">$42,000</td><td class="mono">Mar 2026</td><td><span class="b bg">Green</span></td><td class="note">Consistent monthly.</td></tr>
+          <tr><td class="name">Heavy Metal</td><td class="mono">$3,500</td><td class="mono">$42,000</td><td class="mono">Mar 2026</td><td><span class="b bg">Green</span></td><td class="note">Consistent monthly.</td></tr>
+          <tr><td class="name">HOU — West Brighton</td><td class="mono">Annual</td><td class="mono">$38,250</td><td class="mono">Aug 2025</td><td><span class="b br">Red</span></td><td class="note">Annual draw. 245 days since last. Contract ends May 2026. Liz: confirm draw + renewal.</td></tr>
+          <tr><td class="name">Kalel Companies</td><td class="mono">$2,750</td><td class="mono">$33,000</td><td class="mono">Mar 2026</td><td><span class="b bg">Green</span></td><td class="note">Via Preservation Logistics.</td></tr>
+          <tr><td class="name">Merola / SFO</td><td class="mono">$1,333</td><td class="mono">$16,000</td><td class="mono">Mar 2026</td><td><span class="b bg">Green</span></td><td class="note">Seasonal program billing.</td></tr>
+          <tr><td class="name">Laffont</td><td class="mono">$1,042</td><td class="mono">$12,500</td><td class="mono">Nov 2025</td><td><span class="b bg">Green</span></td><td class="note">Yearly contract.</td></tr>
+          <tr><td class="name">Double Edge Theatre</td><td class="mono">$950</td><td class="mono">$11,400</td><td class="mono">Mar 2026</td><td><span class="b bg">Green</span></td><td class="note">Per-module billing.</td></tr>
+          <tr><td class="name">Tuxedo (NEW)</td><td class="mono">$900</td><td class="mono">$10,800</td><td class="mono">TBD</td><td><span class="b ba">Amber</span></td><td class="note">New client — first invoice pending.</td></tr>
+          <tr><td class="name">Lindemann</td><td class="mono">$917</td><td class="mono">$11,000</td><td class="mono">Oct 2025</td><td><span class="b ba">Amber</span></td><td class="note">6 months since last invoice. Confirm active.</td></tr>
+          <tr><td class="name">Symbolic World</td><td class="mono">$850</td><td class="mono">$10,200</td><td class="mono">Mar 2026</td><td><span class="b bg">Green</span></td><td class="note">Current.</td></tr>
+          <tr><td class="name">AES</td><td class="mono">$700</td><td class="mono">$8,400</td><td class="mono">Mar 2026</td><td><span class="b bg">Green</span></td><td class="note">Current.</td></tr>
+          <tr><td class="name">ICDT</td><td class="mono">$280</td><td class="mono">$3,360</td><td class="mono">Jun 2025</td><td><span class="b br">Red</span></td><td class="note">300+ days. Write-off candidate.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════ EXPENSES ═══════ -->
+  <div class="panel" id="exp">
+    <div class="sec">March 2026 Burn Breakdown</div>
+
+    <div class="card" style="padding:28px">
+      <div class="donut-wrap">
+        <div class="donut" style="background:conic-gradient(#f87171 0% 69%,#60a5fa 69% 74%,#a78bfa 74% 78%,#fbbf24 78% 87%,#34d399 87% 91%,#6b7280 91% 100%)">
+          <div class="donut-center"><div class="donut-center-val">$29K</div><div class="donut-center-lbl">Monthly burn</div></div>
+        </div>
+        <div class="donut-legend">
+          <div class="leg-row"><div class="leg-sq" style="background:#f87171"></div>Nissi — Dev Contractor · $20,120 (69%)</div>
+          <div class="leg-row"><div class="leg-sq" style="background:#60a5fa"></div>W-2 Payroll + Gusto · $1,391 (5%)</div>
+          <div class="leg-row"><div class="leg-sq" style="background:#a78bfa"></div>SaaS & Software · ~$1,200 (4%)</div>
+          <div class="leg-row"><div class="leg-sq" style="background:#fbbf24"></div>Chase Card + Insurance · ~$3,700 (13%)</div>
+          <div class="leg-row"><div class="leg-sq" style="background:#34d399"></div>Servers + Consulting · ~$900 (3%)</div>
+          <div class="leg-row"><div class="leg-sq" style="background:#6b7280"></div>Tax, Fees, Other · ~$700 (2%)</div>
+          <div style="margin-top:10px;font-family:var(--ff-mono);font-size:.65rem;color:var(--red)">⚠ Nissi = 69% of total burn. Single-contractor concentration risk.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-title">Expense Detail</div></div>
+      <table>
+        <thead><tr><th>Category</th><th>Monthly</th><th>% Burn</th><th>Trend</th><th>Status</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td class="name">Nissi — Dev Contractor</td><td class="mono">$20,120</td><td class="mono">69%</td><td>Flat</td><td><span class="b ba">Amber</span></td><td class="note">$20,120/mo fixed. 2 months behind.</td></tr>
+          <tr><td class="name">W-2 Payroll + Gusto</td><td class="mono">$1,391</td><td class="mono">5%</td><td>Flat</td><td><span class="b bg">Green</span></td><td class="note">~$1,191 net + ~$100 tax + ~$100 fee.</td></tr>
+          <tr><td class="name">SaaS & Software</td><td class="mono">~$1,200</td><td class="mono">4%</td><td>Flat</td><td><span class="b bg">Green</span></td><td class="note">Stacker, Webflow, Teamup, Intercom, Figma.</td></tr>
+          <tr><td class="name">Chase Card Spend</td><td class="mono">~$2,500</td><td class="mono">9%</td><td>Variable</td><td><span class="b bg">Green</span></td><td class="note">Misc operational.</td></tr>
+          <tr><td class="name">Insurance</td><td class="mono">~$1,200</td><td class="mono">4%</td><td>Flat</td><td><span class="b bg">Green</span></td><td class="note">Business insurance.</td></tr>
+          <tr><td class="name">Servers & Infra</td><td class="mono">~$400</td><td class="mono">1%</td><td>Flat</td><td><span class="b bg">Green</span></td><td class="note">Cloud hosting.</td></tr>
+          <tr><td class="name">Consulting</td><td class="mono">~$500</td><td class="mono">2%</td><td>Declining</td><td><span class="b bg">Green</span></td><td class="note">Down from 2025.</td></tr>
+          <tr><td class="name">Tax, Fees, Other</td><td class="mono">~$700</td><td class="mono">2%</td><td>Flat</td><td><span class="b bg">Green</span></td><td class="note">State filings, bank fees, misc.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════ CLIENTS & DELIVERY ═══════ -->
+  <div class="panel" id="del">
+    <div class="card">
+      <div class="card-head"><div class="card-title">Client & Delivery Health</div><div class="card-count">6 accounts tracked</div></div>
+      <table>
+        <thead><tr><th>Account</th><th>Health</th><th>Last Touch</th><th>Open Commitments</th><th>Risks</th><th>Proof Points</th></tr></thead>
+        <tbody>
+          <tr><td class="name">FEC / NYCHA</td><td><span class="b bg">Green</span></td><td class="mono">Apr 4</td><td>Phase 2 scenario modeling</td><td>None</td><td class="note">4-min audit packages. Weeks→min scenario planning.</td></tr>
+          <tr><td class="name">Kalel</td><td><span class="b bg">Green</span></td><td class="mono">Apr 3</td><td>Compliance report template v2</td><td>None</td><td class="note">5,000+ hrs reclaimed. 90% compliance reduction.</td></tr>
+          <tr><td class="name">HTX / HHA</td><td><span class="b ba">Amber</span></td><td class="mono">Mar 28</td><td>Sole source under review</td><td style="color:var(--amber)">10 days no response</td><td class="note">Follow up — Liz contact exec office.</td></tr>
+          <tr><td class="name">HOU — West Brighton</td><td><span class="b ba">Amber</span></td><td class="mono">Aug 2025</td><td>Renewal May 2026</td><td style="color:var(--amber)">245 days since draw</td><td class="note">Confirm draw + renewal.</td></tr>
+          <tr><td class="name">Tuxedo (NEW)</td><td><span class="b ba">Amber</span></td><td class="mono">TBD</td><td>Onboarding</td><td style="color:var(--amber)">New — no history</td><td class="note">Confirm billing start.</td></tr>
+          <tr><td class="name">ICDT</td><td><span class="b br">Red</span></td><td class="mono">Jun 2025</td><td>None</td><td style="color:var(--red)">300+ days. Write-off?</td><td class="note">Decision needed: collect or write off.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════ ACTION ITEMS ═══════ -->
+  <div class="panel" id="act">
+    <div class="card">
+      <div class="card-head"><div class="card-title">Action Items</div><div class="card-count">14 items · 4 red · 6 amber · 4 green</div></div>
+      <table>
+        <thead><tr><th>#</th><th>Action</th><th>Source</th><th>Owner</th><th>Due</th><th>Status</th><th>Flag?</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">1</td><td class="name">Nissi payment plan — 2 months ($43,360)</td><td>Finance</td><td class="mono">Liz + Ray</td><td class="mono">Apr 9</td><td><span class="b br">Red</span></td><td style="color:var(--red);font-weight:600">YES</td></tr>
+          <tr><td class="mono">2</td><td class="name">HTX follow-up — 10 days silence</td><td>Delivery</td><td class="mono">Ray + Liz</td><td class="mono">Apr 9</td><td><span class="b br">Red</span></td><td style="color:var(--red);font-weight:600">YES</td></tr>
+          <tr><td class="mono">3</td><td class="name">Respond to Reformation Partners ($120M fund)</td><td>Investor</td><td class="mono">Ray</td><td class="mono">Apr 9</td><td><span class="b br">Red</span></td><td style="color:var(--red);font-weight:600">YES</td></tr>
+          <tr><td class="mono">4</td><td class="name">ICDT — collect or write off ($2,800+)</td><td>Finance</td><td class="mono">Ray + Liz</td><td class="mono">Apr 14</td><td><span class="b br">Red</span></td><td style="color:var(--red);font-weight:600">YES</td></tr>
+          <tr><td class="mono">5</td><td>Confirm HOU 2026 draw + renewal</td><td>AR</td><td class="mono">Liz</td><td class="mono">Apr 11</td><td><span class="b ba">Amber</span></td><td>YES</td></tr>
+          <tr><td class="mono">6</td><td>Re-engage Five Elms Capital</td><td>Investor</td><td class="mono">Ray</td><td class="mono">Apr 11</td><td><span class="b ba">Amber</span></td><td>No</td></tr>
+          <tr><td class="mono">7</td><td>Confirm Laffont billing (Nov 2025)</td><td>AR</td><td class="mono">Ray</td><td class="mono">Apr 11</td><td><span class="b ba">Amber</span></td><td>No</td></tr>
+          <tr><td class="mono">8</td><td>Confirm Lindemann billing (Oct 2025)</td><td>AR</td><td class="mono">Ray</td><td class="mono">Apr 11</td><td><span class="b ba">Amber</span></td><td>No</td></tr>
+          <tr><td class="mono">9</td><td>Onboard Tuxedo — billing start</td><td>Delivery</td><td class="mono">Ray</td><td class="mono">Apr 11</td><td><span class="b ba">Amber</span></td><td>No</td></tr>
+          <tr><td class="mono">10</td><td>Liz/Ray meeting — pending items</td><td>Reset Deck</td><td class="mono">Liz + Ray</td><td class="mono">Apr 9-10</td><td><span class="b ba">Amber</span></td><td>No</td></tr>
+          <tr><td class="mono">11</td><td>Liz 1:1 with Sushanth</td><td>Reset Deck</td><td class="mono">Liz</td><td class="mono">Apr 9</td><td><span class="b ba">Amber</span></td><td>No</td></tr>
+          <tr><td class="mono">12</td><td>Central repo TOC — sign-off</td><td>Ops</td><td class="mono">Ray</td><td class="mono">Apr 9</td><td><span class="b bg">Green</span></td><td>No</td></tr>
+          <tr><td class="mono">13</td><td>Monday report operational</td><td>Ops</td><td class="mono">Ray</td><td class="mono">Done</td><td><span class="b bg">Green</span></td><td>—</td></tr>
+          <tr><td class="mono">14</td><td>Investor tracker rebuilt</td><td>Ops</td><td class="mono">Ray</td><td class="mono">Done</td><td><span class="b bg">Green</span></td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════ C-SUITE FLAGS ═══════ -->
+  <div class="panel" id="flags">
+    <div class="sec">Requires Team Decision</div>
+
+    <div class="flag flag-r">
+      <div class="flag-title">🔴 Nissi — 2 Months Unpaid ($43,360)</div>
+      <div class="flag-body">Bank shows $10,237 but true net cash is –$13,462 after contractor liability. Payment of 1 month was made recently reducing from 3 to 2 months outstanding. Contractor relationship at risk if not resolved.</div>
+      <div class="flag-meta"><span>Owner: Sushanth / Liz</span><span>Decision: Payment plan + catch-up schedule</span><span>By: This week</span></div>
+    </div>
+    <div class="flag flag-r">
+      <div class="flag-title">🔴 ICDT — 300+ Days No Invoice ($280/mo)</div>
+      <div class="flag-body">$2,800+ potentially uncollectable. Last invoice Jun 2025. No contact in 10 months. Need a decision: pursue collection or write off and clean the books.</div>
+      <div class="flag-meta"><span>Owner: Sean / Liz</span><span>Decision: Collect or write off</span><span>By: This week</span></div>
+    </div>
+    <div class="flag flag-r">
+      <div class="flag-title">🔴 HTX Sole Source — 10 Days Silence</div>
+      <div class="flag-body">Proposal submitted to Houston Housing Authority. No acknowledgment from procurement office. May be misrouted or deprioritized. Need direct executive contact.</div>
+      <div class="flag-meta"><span>Owner: Sean / Liz</span><span>Decision: Liz contacts exec office · Ray preps RFP alternative</span><span>By: This week</span></div>
+    </div>
+
+    <div class="flag flag-a">
+      <div class="flag-title">🟡 HOU West Brighton — Annual Draw Timing Unknown</div>
+      <div class="flag-body">Contract ends May 2026. Last draw Aug 2025. Need to confirm if 2026 draw will be taken and whether Resonance is pursuing renewal.</div>
+      <div class="flag-meta"><span>Owner: Liz</span><span>Decision: Confirm draw + renewal intent</span><span>By: Apr 14</span></div>
+    </div>
+    <div class="flag flag-a">
+      <div class="flag-title">🟡 Laffont + Lindemann — Billing Gaps</div>
+      <div class="flag-body">Laffont last invoiced Nov 2025 (5 months). Lindemann last invoiced Oct 2025 (6 months). Need to confirm contracts still active and send invoices if overdue.</div>
+      <div class="flag-meta"><span>Owner: Ray</span><span>Decision: Confirm + invoice</span><span>By: Apr 14</span></div>
+    </div>
+    <div class="flag flag-a">
+      <div class="flag-title">🟡 Runway at 8.4 Months (Base Case)</div>
+      <div class="flag-body">Below 9-month target. Legal and procurement research costs contributing to elevated burn. Not critical yet but trending in the wrong direction.</div>
+      <div class="flag-meta"><span>Owner: Ray</span><span>Decision: Monitor · discuss burn levers</span><span>Ongoing</span></div>
+    </div>
+
+    <div class="sec" style="margin-top:32px">Acknowledged — No Discussion Needed</div>
+    <div class="card" style="padding:20px 24px">
+      <div class="green-item"><div class="green-dot"></div><div class="green-text">FEC/NYCHA — consistent payer, strongest proof points (4-min audits, scenario planning)</div></div>
+      <div class="green-item"><div class="green-dot"></div><div class="green-text">Kalel — 5,000+ hrs reclaimed, 90% compliance reduction, zero missed deadlines</div></div>
+      <div class="green-item"><div class="green-dot"></div><div class="green-text">Wollman Rink + Heavy Metal — consistent monthly, no issues</div></div>
+      <div class="green-item"><div class="green-dot"></div><div class="green-text">Active client collections — no invoices >30 days (excl. ICDT)</div></div>
+      <div class="green-item"><div class="green-dot"></div><div class="green-text">Capchase debt — fully repaid May 2025, confirmed cleared</div></div>
+      <div class="green-item"><div class="green-dot"></div><div class="green-text">Folder structure TOC — built, ready for Liz/Sean sign-off</div></div>
+      <div class="green-item"><div class="green-dot"></div><div class="green-text">Monday reporting — Report #001 operational (this file)</div></div>
+      <div class="green-item"><div class="green-dot"></div><div class="green-text">Investor tracker — 33 records rebuilt, feedback playbook, DD readiness checklist</div></div>
+    </div>
+
+    <div style="margin-top:28px;padding:18px 22px;background:var(--bg-2);border:.5px solid var(--border);border-radius:var(--radius-lg)">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+        <div><span style="font-family:var(--ff-mono);font-size:.65rem;color:var(--text-3)">CONTINUITY</span>
+          <div style="font-size:.78rem;color:var(--text-2);margin-top:3px">Saved as: <span style="color:var(--teal)">2026-04-13 Monday Report #001</span> → 08 People & Ops → Weekly Reports</div>
+        </div>
+        <div style="font-family:var(--ff-mono);font-size:.65rem;color:var(--text-3)">Next: April 21, 2026 · Report #002</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function go(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  event.target.classList.add('on');
+}
+function toggleTheme(){
+  const h=document.documentElement;
+  h.dataset.theme=h.dataset.theme==='dark'?'light':'dark';
+}
+</script>
+</body>
+</html>

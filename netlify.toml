@@ -1,6 +1,147 @@
 [build]
-  functions = "netlify/functions"
-  publish = "public"
+  publish = "."
+  command = ""
 
-[functions]
-  node_bundler = "esbuild"
+# ── Pretty URLs: strip .html extensions ──
+[[redirects]]
+  from   = "/about"
+  to     = "/about.html"
+  status = 200
+
+[[redirects]]
+  from = "/case-studies"
+  to   = "/case-studies.html"
+  status = 200
+
+[[redirects]]
+  from = "/calculators"
+  to   = "/calculators.html"
+  status = 200
+
+[[redirects]]
+  from = "/monday-report"
+  to   = "/monday-report.html"
+  status = 200
+
+# ── Legacy drawer anchor hash redirects → new pages ──
+[[redirects]]
+  from = "/#calculators"
+  to   = "/calculators"
+  status = 301
+
+[[redirects]]
+  from = "/#case-studies"
+  to   = "/case-studies"
+  status = 301
+
+# ── Trailing slash normalisation ──
+[[redirects]]
+  from = "/about/"
+  to   = "/about"
+  status = 301
+
+[[redirects]]
+  from = "/case-studies/"
+  to   = "/case-studies"
+  status = 301
+
+[[redirects]]
+  from = "/calculators/"
+  to   = "/calculators"
+  status = 301
+
+[[redirects]]
+  from = "/monday-report/"
+  to   = "/monday-report"
+  status = 301
+
+# ── 404 fallback ──
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 404
+
+# ── Security & performance headers for all pages ──
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options        = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection       = "1; mode=block"
+    Referrer-Policy        = "strict-origin-when-cross-origin"
+    Permissions-Policy     = "camera=(), microphone=(), geolocation=()"
+
+# ── Cache static assets aggressively ──
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000"
+
+[[headers]]
+  for = "*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000"
+
+[[headers]]
+  for = "*.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000"
+
+# ── HTML pages: short cache, always revalidate ──
+[[headers]]
+  for = "*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/sitemap.xml"
+  [headers.values]
+    Cache-Control    = "public, max-age=86400"
+    Content-Type     = "application/xml; charset=utf-8"
+
+[[headers]]
+  for = "/robots.txt"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+# ── Cache favicons ──
+[[headers]]
+  for = "/favicon.ico"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000"
+
+[[headers]]
+  for = "/favicon-*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000"
+
+[[headers]]
+  for = "/apple-touch-icon.png"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000"
+
+[[headers]]
+  for = "/android-chrome-*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000"
+
+[[headers]]
+  for = "/site.webmanifest"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+    Content-Type  = "application/manifest+json; charset=utf-8"
