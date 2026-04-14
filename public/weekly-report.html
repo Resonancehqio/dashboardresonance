@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resonance — Weekly Report</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='28' font-size='28'>◆</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--ff-display:'Fraunces',serif;--ff-body:'Instrument Sans',sans-serif;--ff-mono:'JetBrains Mono',monospace;--radius:12px;--radius-lg:16px;--teal:#14b8a6;--teal-rgb:20,184,166;--green:#34d399;--green-rgb:52,211,153;--amber:#fbbf24;--amber-rgb:251,191,36;--red:#f87171;--red-rgb:248,113,113;--blue:#60a5fa;--blue-rgb:96,165,250;--ease:cubic-bezier(.4,0,.2,1);--speed:.3s}
+[data-theme="dark"]{--bg:#070710;--bg-1:#0d0e18;--bg-2:#131520;--bg-3:#1b1d2c;--surface:#13141f;--surface-h:#1a1c2b;--border:rgba(255,255,255,.06);--border-h:rgba(255,255,255,.12);--text-0:#f2f2fa;--text-1:#d0d2e4;--text-2:#7e82a0;--text-3:#4a4e68;--shadow:0 2px 8px rgba(0,0,0,.4),0 12px 40px rgba(0,0,0,.25)}
+[data-theme="light"]{--bg:#f0f1f5;--bg-1:#fff;--bg-2:#fff;--bg-3:#ebedf2;--surface:#fff;--surface-h:#f7f8fb;--border:rgba(0,0,0,.07);--border-h:rgba(0,0,0,.13);--text-0:#0f1019;--text-1:#1f2133;--text-2:#5c5f78;--text-3:#93969f;--shadow:0 2px 8px rgba(0,0,0,.05),0 12px 40px rgba(0,0,0,.04);--teal:#0d9488;--green:#059669;--amber:#d97706;--red:#dc2626;--blue:#2563eb}
+html{font-size:16px}body{background:var(--bg);color:var(--text-1);font-family:var(--ff-body);line-height:1.55;min-height:100vh;transition:background var(--speed) var(--ease),color var(--speed) var(--ease)}.shell{max-width:1280px;margin:0 auto;padding:32px 28px 100px}
+.header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:36px;flex-wrap:wrap;gap:16px}.logo{font-family:var(--ff-display);font-size:1.3rem;font-weight:400;color:var(--text-0);letter-spacing:-.02em}.logo em{font-style:italic;font-weight:300;color:var(--teal)}.report-id{font-family:var(--ff-mono);font-size:.7rem;color:var(--text-3);margin-top:4px;letter-spacing:.03em}.header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.chip{font-family:var(--ff-mono);font-size:.65rem;color:var(--text-3);background:var(--bg-3);border:.5px solid var(--border);border-radius:100px;padding:5px 14px}.chip-date{color:var(--teal);border-color:rgba(var(--teal-rgb),.2);background:rgba(var(--teal-rgb),.06)}.chip-live{color:var(--green);border-color:rgba(var(--green-rgb),.2);background:rgba(var(--green-rgb),.06);animation:pulse 2s ease infinite}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}.toggle{width:50px;height:26px;border-radius:13px;background:var(--bg-3);border:.5px solid var(--border);cursor:pointer;position:relative;transition:all var(--speed) var(--ease);flex-shrink:0}.toggle::after{content:'';position:absolute;top:3px;width:20px;height:20px;border-radius:50%;transition:all var(--speed) var(--ease)}[data-theme="dark"] .toggle::after{left:27px;background:#fbbf24}[data-theme="light"] .toggle::after{left:3px;background:#374151}
+.stoplight{display:flex;gap:10px;margin-bottom:28px;flex-wrap:wrap;align-items:center}.sl{display:flex;align-items:center;gap:6px;font-family:var(--ff-mono);font-size:.75rem;padding:7px 16px;border-radius:10px}.sl-g{color:var(--green);background:rgba(var(--green-rgb),.08);border:.5px solid rgba(var(--green-rgb),.18)}.sl-a{color:var(--amber);background:rgba(var(--amber-rgb),.08);border:.5px solid rgba(var(--amber-rgb),.18)}.sl-r{color:var(--red);background:rgba(var(--red-rgb),.08);border:.5px solid rgba(var(--red-rgb),.18)}.sl b{font-size:1.1rem}
+.tabs{display:flex;gap:4px;margin-bottom:24px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}.tabs::-webkit-scrollbar{display:none}.tab{font-family:var(--ff-body);font-size:.78rem;font-weight:600;color:var(--text-3);background:rgba(255,255,255,.02);border:.5px solid var(--border);border-radius:100px;padding:9px 20px;cursor:pointer;white-space:nowrap;transition:all .2s var(--ease);flex-shrink:0}.tab:hover{background:rgba(var(--teal-rgb),.06);color:var(--text-2);border-color:rgba(var(--teal-rgb),.18)}.tab.on{background:rgba(var(--teal-rgb),.1);color:var(--teal);border-color:rgba(var(--teal-rgb),.3)}
+.panel{display:none;animation:up .35s var(--ease)}.panel.on{display:block}@keyframes up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:24px}.stat{background:var(--bg-2);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:22px 24px;position:relative;overflow:hidden;box-shadow:var(--shadow)}.stat:hover{transform:translateY(-2px);border-color:var(--border-h)}.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px}.stat.c-r::before{background:var(--red)}.stat.c-g::before{background:var(--green)}.stat.c-a::before{background:var(--amber)}.stat.c-t::before{background:var(--teal)}.stat-label{font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px}.stat-val{font-family:var(--ff-display);font-size:1.9rem;font-weight:300;color:var(--text-0);letter-spacing:-.03em}.stat-sub{font-family:var(--ff-mono);font-size:.68rem;margin-top:8px}.stat-sub.ok{color:var(--green)}.stat-sub.warn{color:var(--amber)}.stat-sub.bad{color:var(--red)}
+.sec{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin:30px 0 14px;display:flex;align-items:center;gap:12px}.sec::after{content:'';flex:1;height:.5px;background:var(--border)}
+.card{background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);margin-bottom:16px}.card-head{padding:18px 24px;border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}.card-title{font-family:var(--ff-display);font-size:1.05rem;font-weight:400;color:var(--text-0)}.card-count{font-family:var(--ff-mono);font-size:.68rem;color:var(--text-3)}table{width:100%;border-collapse:collapse}thead th{font-size:.62rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text-3);text-align:left;padding:11px 20px;background:var(--bg-3);border-bottom:.5px solid var(--border);white-space:nowrap;position:sticky;top:0}tbody td{font-size:.82rem;color:var(--text-2);padding:14px 20px;border-bottom:.5px solid rgba(255,255,255,.025);vertical-align:top}tbody tr:hover{background:var(--surface-h)}tbody tr:last-child td{border-bottom:none}td.name{color:var(--text-0);font-weight:600}td.mono{font-family:var(--ff-mono);font-size:.72rem}td.note{max-width:340px;font-size:.78rem;line-height:1.5}
+.b{display:inline-flex;align-items:center;gap:5px;font-family:var(--ff-mono);font-size:.62rem;font-weight:500;padding:4px 11px;border-radius:100px;white-space:nowrap}.b::before{content:'';width:6px;height:6px;border-radius:50%}.bg{color:var(--green);background:rgba(var(--green-rgb),.1);border:.5px solid rgba(var(--green-rgb),.18)}.bg::before{background:var(--green)}.ba{color:var(--amber);background:rgba(var(--amber-rgb),.1);border:.5px solid rgba(var(--amber-rgb),.18)}.ba::before{background:var(--amber)}.br{color:var(--red);background:rgba(var(--red-rgb),.1);border:.5px solid rgba(var(--red-rgb),.18)}.br::before{background:var(--red)}.bt{color:var(--teal);background:rgba(var(--teal-rgb),.1);border:.5px solid rgba(var(--teal-rgb),.18)}.bt::before{background:var(--teal)}
+.flag{border-radius:var(--radius);padding:18px 22px;margin-bottom:10px}.flag-r{background:rgba(var(--red-rgb),.06);border:.5px solid rgba(var(--red-rgb),.15)}.flag-a{background:rgba(var(--amber-rgb),.06);border:.5px solid rgba(var(--amber-rgb),.15)}.flag-title{font-size:.85rem;font-weight:600;margin-bottom:5px}.flag-r .flag-title{color:var(--red)}.flag-a .flag-title{color:var(--amber)}.flag-body{font-size:.78rem;color:var(--text-2);line-height:1.55}.flag-meta{font-family:var(--ff-mono);font-size:.65rem;color:var(--text-3);margin-top:8px;display:flex;gap:16px;flex-wrap:wrap}
+.green-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:.5px solid rgba(255,255,255,.025)}.green-item:last-child{border-bottom:none}.green-dot{width:8px;height:8px;border-radius:50%;background:var(--green);margin-top:5px;flex-shrink:0}.green-text{font-size:.82rem;color:var(--text-2)}
+.donut-wrap{display:flex;align-items:center;gap:24px;flex-wrap:wrap}.donut{width:160px;height:160px;border-radius:50%;position:relative;flex-shrink:0}.donut-center{position:absolute;inset:30px;border-radius:50%;background:var(--bg-2);display:flex;flex-direction:column;align-items:center;justify-content:center}.donut-center-val{font-family:var(--ff-display);font-size:1.3rem;font-weight:300;color:var(--text-0)}.donut-center-lbl{font-size:.6rem;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em}.donut-legend{display:flex;flex-direction:column;gap:6px;flex:1;min-width:200px}.leg-row{display:flex;align-items:center;gap:8px;font-size:.75rem;color:var(--text-2)}.leg-sq{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.setup-banner{background:rgba(var(--amber-rgb),.08);border:.5px solid rgba(var(--amber-rgb),.2);border-radius:var(--radius);padding:20px 24px;margin-bottom:24px;font-size:.82rem;color:var(--text-1);line-height:1.7}.setup-banner code{font-family:var(--ff-mono);font-size:.72rem;background:var(--bg-3);padding:2px 8px;border-radius:4px;color:var(--teal)}.setup-banner h3{font-family:var(--ff-display);font-size:1rem;color:var(--amber);margin-bottom:10px}.setup-banner ol{margin:10px 0 0 20px}.setup-banner li{margin-bottom:6px}
+.error-msg{background:rgba(var(--red-rgb),.08);border:.5px solid rgba(var(--red-rgb),.2);border-radius:var(--radius);padding:16px 20px;margin-bottom:16px;font-size:.78rem;color:var(--red);font-family:var(--ff-mono)}
+@media(max-width:700px){.stats{grid-template-columns:1fr 1fr}.header{flex-direction:column}table{min-width:650px}.card{overflow-x:auto}}
+@media print{body{background:#fff;color:#000}.toggle,.tabs,.setup-banner{display:none!important}.panel{display:block!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="header">
+    <div class="header-left">
+      <div class="logo">Resonance<em>.</em></div>
+      <div class="report-id" id="reportId">Weekly C-Suite Report · Loading...</div>
+    </div>
+    <div class="header-right">
+      <span class="chip chip-date" id="chipDate">—</span>
+      <span class="chip" id="chipOwner">—</span>
+      <span class="chip chip-live" id="chipLive" style="display:none">● Live from Sheets</span>
+      <div class="toggle" onclick="toggleTheme()" title="Toggle theme"></div>
+    </div>
+  </div>
+  <div class="setup-banner" id="setupBanner" style="display:none">
+    <h3>⚙ One-Time Setup</h3>
+    <ol>
+      <li>Import your <strong>Monday Report Excel</strong> into Google Sheets (keep the same layout — don't change anything)</li>
+      <li>Go to <strong>File → Share → Publish to web</strong></li>
+      <li>Select the main report tab → choose <strong>CSV</strong> → Publish → Copy the URL</li>
+      <li>Open this HTML file and paste the URL into <code>SHEET_CSV_URL</code> at the bottom of the script</li>
+    </ol>
+    <div style="margin-top:12px;font-size:.72rem;color:var(--text-3)">The dashboard parses your exact spreadsheet layout. No restructuring needed. Edit the Sheet → refresh → done.</div>
+  </div>
+  <div id="errorArea"></div>
+  <div class="stoplight" id="stoplight">
+    <div class="sl sl-g"><b id="slGreen">—</b> Green</div>
+    <div class="sl sl-a"><b id="slAmber">—</b> Amber</div>
+    <div class="sl sl-r"><b id="slRed">—</b> Red</div>
+    <span style="font-family:var(--ff-mono);font-size:.65rem;color:var(--text-3);margin-left:6px" id="slTotal"></span>
+  </div>
+  <div class="tabs">
+    <button class="tab on" onclick="go('fin')">Financial</button>
+    <button class="tab" onclick="go('rev')">Revenue</button>
+    <button class="tab" onclick="go('exp')">Expenses</button>
+    <button class="tab" onclick="go('del')">Clients & Delivery</button>
+    <button class="tab" onclick="go('act')">Action Items</button>
+    <button class="tab" onclick="go('flags')">C-Suite Flags</button>
+  </div>
+  <div class="panel on" id="fin"><div id="finStats" class="stats"></div><div class="sec">MRR Overview</div><div id="mrrDonut"></div></div>
+  <div class="panel" id="rev"><div id="revStats" class="stats"></div><div id="revTable"></div></div>
+  <div class="panel" id="exp"><div class="sec">Expense Breakdown</div><div id="expDonut"></div><div id="expTable" style="margin-top:20px"></div></div>
+  <div class="panel" id="del"><div id="delTable"></div></div>
+  <div class="panel" id="act"><div id="actTable"></div></div>
+  <div class="panel" id="flags"><div class="sec">Requires Team Decision</div><div id="flagsRed"></div><div id="flagsAmber" style="margin-top:20px"></div><div class="sec" style="margin-top:32px">Acknowledged — No Discussion Needed</div><div id="ackList"></div><div id="continuity" style="margin-top:28px"></div></div>
+</div>
+<script>
+// ═══════════════════════════════════════════════════════════════
+// CONFIG — One URL. Publish your report tab as CSV, paste here.
+// ═══════════════════════════════════════════════════════════════
+const SHEET_CSV_URL = '/.netlify/functions/sheets-proxy';
+
+// ═══════════════════════════════════════════════════════════════
+// CSV PARSER
+// ═══════════════════════════════════════════════════════════════
+function parseCSV(text) {
+  const result = []; let row = []; let cell = ''; let inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (c === '"') { if (inQ && text[i+1] === '"') { cell += '"'; i++; } else inQ = !inQ; }
+    else if (c === ',' && !inQ) { row.push(cell); cell = ''; }
+    else if ((c === '\n' || c === '\r') && !inQ) { if (c === '\r' && text[i+1] === '\n') i++; row.push(cell); result.push(row); row = []; cell = ''; }
+    else cell += c;
+  }
+  if (cell || row.length) { row.push(cell); result.push(row); }
+  return result;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SPREADSHEET PARSER — reads exact layout by section headers
+// ═══════════════════════════════════════════════════════════════
+function parseReport(rows) {
+  const data = { meta: {}, burn: [], revenue: [], expenses: [], delivery: [], actions: [], flags: [], acknowledged: [], footer: '' };
+
+  // Row 1 (idx 0): Title
+  // Row 2 (idx 1): "April 7, 2026 · Report #001 · Owner: Ray · Source: ..."
+  const metaLine = (rows[1] || [])[0] || '';
+  const metaParts = metaLine.split('·').map(s => s.trim());
+  data.meta.date = metaParts[0] || '';
+  data.meta.number = (metaParts[1] || '').replace('Report ', '').trim();
+  data.meta.owner = (metaParts[2] || '').replace('Owner:', '').trim();
+  data.meta.source = (metaParts[3] || '').replace('Source:', '').trim();
+
+  // Find sections by scanning column 0 for known headers
+  let mode = '';
+  for (let i = 0; i < rows.length; i++) {
+    const r = rows[i];
+    const c0 = (r[0] || '').trim();
+
+    // Section detection
+    if (c0 === 'BURN & RUNWAY') { mode = 'burn'; continue; }
+    if (c0.startsWith('REVENUE')) { mode = 'revenue'; continue; }
+    if (c0.startsWith('EXPENSE BREAKDOWN')) { mode = 'expenses'; continue; }
+    if (c0 === 'CLIENT & DELIVERY HEALTH') { mode = 'delivery'; continue; }
+    if (c0 === 'ACTION ITEMS') { mode = 'actions'; continue; }
+    if (c0.startsWith('C-SUITE FLAGS')) { mode = 'flags'; continue; }
+    if (c0.startsWith('ACKNOWLEDGED')) { mode = 'acknowledged'; continue; }
+    if (c0.startsWith('Save as:')) { data.footer = c0; continue; }
+
+    // Skip header rows (where col1 = 'Metric', 'Client', etc.) and empty rows
+    const c1 = (r[1] || '').trim();
+    if (!c0 && !c1) continue;
+    if (['Metric','Client','Category','Account','Action Item','Flag',''].includes(c1) && !c0.match(/^[0-9🔴🟡🟢]/)) continue;
+
+    // Parse data rows
+    if (mode === 'burn' && c0.match(/^\d+$/)) {
+      data.burn.push({ metric: r[1], current: r[2], target: r[3], variance: r[4], status: r[5], notes: r[6] });
+    }
+    else if (mode === 'revenue' && (c0.match(/^\d+$/) || c1 === 'TOTALS')) {
+      data.revenue.push({ client: r[1], mrr: r[2], arr: r[3], last_invoice: r[4], status: r[5], notes: r[6] });
+    }
+    else if (mode === 'expenses' && (c0.match(/^\d+$/) || c1 === 'TOTAL BURN')) {
+      data.expenses.push({ category: r[1], monthly: r[2], pct: r[3], trend: r[4], status: r[5], notes: r[6] });
+    }
+    else if (mode === 'delivery' && c0.match(/^\d+$/)) {
+      data.delivery.push({ account: r[1], health: r[2], last_touch: r[3], open: r[4], risks: r[5], proof: r[6] });
+    }
+    else if (mode === 'actions' && c0.match(/^\d+$/)) {
+      data.actions.push({ num: c0, action: r[1], source: r[2], owner: r[3], due: r[4], status: r[5], flag: r[6] });
+    }
+    else if (mode === 'flags' && (c0.includes('🔴') || c0.includes('🟡'))) {
+      data.flags.push({ color: c0, flag: r[1], severity: r[2], detail: r[3], owner: r[4], decision: r[5], by: r[6] });
+    }
+    else if (mode === 'acknowledged' && c0.match(/^\d+$/)) {
+      data.acknowledged.push(r[1]);
+    }
+  }
+
+  // Count stoplights from flags + actions
+  const reds = data.flags.filter(f => f.color.includes('🔴')).length;
+  const ambers = data.flags.filter(f => f.color.includes('🟡')).length;
+  const greens = data.acknowledged.length;
+  data.meta.reds = reds;
+  data.meta.ambers = ambers;
+  data.meta.greens = greens;
+  data.meta.total = reds + ambers + greens;
+
+  return data;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════
+function esc(s) { const d = document.createElement('div'); d.textContent = (s||'').trim(); return d.innerHTML; }
+function statusClass(s) { const l = (s||'').toLowerCase(); return l.includes('red') ? 'Red' : l.includes('amber') ? 'Amber' : 'Green'; }
+function badge(s) { const c = statusClass(s); return c === 'Red' ? '<span class="b br">'+esc(s)+'</span>' : c === 'Amber' ? '<span class="b ba">'+esc(s)+'</span>' : '<span class="b bg">'+esc(s)+'</span>'; }
+function sc(s) { const c = statusClass(s); return c === 'Red' ? 'c-r' : c === 'Amber' ? 'c-a' : 'c-g'; }
+function ssc(s) { const c = statusClass(s); return c === 'Red' ? 'bad' : c === 'Amber' ? 'warn' : 'ok'; }
+
+// ═══════════════════════════════════════════════════════════════
+// RENDERERS
+// ═══════════════════════════════════════════════════════════════
+function render(data) {
+  const m = data.meta;
+  document.getElementById('reportId').textContent = 'Weekly C-Suite Report · ' + m.number;
+  document.getElementById('chipDate').textContent = m.date;
+  document.getElementById('chipOwner').textContent = 'Owner: ' + m.owner;
+  document.getElementById('slGreen').textContent = m.greens;
+  document.getElementById('slAmber').textContent = m.ambers;
+  document.getElementById('slRed').textContent = m.reds;
+  document.getElementById('slTotal').textContent = m.total + ' items tracked · Source: ' + m.source;
+
+  // Financial
+  document.getElementById('finStats').innerHTML = data.burn.map(r =>
+    '<div class="stat '+sc(r.status)+'"><div class="stat-label">'+esc(r.metric)+'</div><div class="stat-val">'+esc(r.current)+'</div><div class="stat-sub '+ssc(r.status)+'">'+esc(r.notes)+'</div></div>'
+  ).join('');
+
+  // MRR Donut
+  const cl = data.revenue.filter(r => r.client !== 'TOTALS');
+  const mrc = cl.filter(r => (r.mrr||'').trim() !== 'Annual');
+  const colors = ['#14b8a6','#0d6e64','#1e6b5e','#3b82f6','#f59e0b','#8b5cf6','#6b7280','#94a3b8','#ec4899','#f97316','#06b6d4','#84cc16'];
+  const parsed = mrc.map(r => ({n: r.client, v: parseFloat((r.mrr||'').replace(/[$,]/g,'')) || 0})).sort((a,b) => b.v - a.v);
+  const total = parsed.reduce((s,c) => s+c.v, 0);
+  let cum = 0;
+  const segs = parsed.map((c,i) => { const st = (cum/total)*100; cum += c.v; return {...c, st, en: (cum/total)*100, col: colors[i%colors.length], pc: ((c.v/total)*100).toFixed(1)}; });
+  const gr = segs.map(s => s.col+' '+s.st+'% '+s.en+'%').join(',');
+  const ann = cl.find(r => (r.mrr||'').trim() === 'Annual');
+  document.getElementById('mrrDonut').innerHTML = '<div class="card" style="padding:28px"><div class="donut-wrap"><div class="donut" style="background:conic-gradient('+gr+')"><div class="donut-center"><div class="donut-center-val">$'+total.toLocaleString()+'</div><div class="donut-center-lbl">Monthly MRR</div></div></div><div class="donut-legend">'+segs.map(s => '<div class="leg-row"><div class="leg-sq" style="background:'+s.col+'"></div>'+esc(s.n)+' — $'+s.v.toLocaleString()+' ('+s.pc+'%)</div>').join('')+(ann ? '<div style="margin-top:8px;font-family:var(--ff-mono);font-size:.62rem;color:var(--text-3)">'+esc(ann.client)+' ('+esc(ann.arr)+'/yr annual) excluded from MRR</div>' : '')+'</div></div></div>';
+
+  // Revenue
+  const tot = data.revenue.find(r => r.client === 'TOTALS');
+  document.getElementById('revStats').innerHTML = '<div class="stat c-t"><div class="stat-label">MRR</div><div class="stat-val">'+esc(tot?.mrr)+'</div><div class="stat-sub ok">'+mrc.length+' monthly clients</div></div><div class="stat c-t"><div class="stat-label">ARR</div><div class="stat-val">'+esc(tot?.arr)+'</div><div class="stat-sub ok">Includes HOU annual draw</div></div><div class="stat c-t"><div class="stat-label">Active Clients</div><div class="stat-val">'+cl.length+'</div><div class="stat-sub ok">'+esc(tot?.notes)+'</div></div>';
+  document.getElementById('revTable').innerHTML = '<div class="card"><div class="card-head"><div class="card-title">Client Revenue Detail</div><div class="card-count">'+cl.length+' accounts</div></div><table><thead><tr><th>Client</th><th>MRR</th><th>ARR</th><th>Last Invoice</th><th>Status</th><th>Notes</th></tr></thead><tbody>'+cl.map(r => '<tr><td class="name">'+esc(r.client)+'</td><td class="mono">'+esc(r.mrr)+'</td><td class="mono">'+esc(r.arr)+'</td><td class="mono">'+esc(r.last_invoice)+'</td><td>'+badge(r.status)+'</td><td class="note">'+esc(r.notes)+'</td></tr>').join('')+'</tbody></table></div>';
+
+  // Expenses
+  const expItems = data.expenses.filter(r => r.category !== 'TOTAL BURN');
+  const expTot = data.expenses.find(r => r.category === 'TOTAL BURN');
+  const expColors = ['#f87171','#60a5fa','#a78bfa','#fbbf24','#34d399','#6b7280','#94a3b8','#ec4899'];
+  const expP = expItems.map((r,i) => ({...r, v: parseFloat((r.monthly||'').replace(/[$,~]/g,''))||0, col: expColors[i%expColors.length]}));
+  const expS = expP.reduce((a,c) => a+c.v, 0); let expCum = 0;
+  const expSegs = expP.map(x => { const st = (expCum/expS)*100; expCum += x.v; return {...x, st, en: (expCum/expS)*100}; });
+  const expGr = expSegs.map(x => x.col+' '+x.st+'% '+x.en+'%').join(',');
+  document.getElementById('expDonut').innerHTML = '<div class="card" style="padding:28px"><div class="donut-wrap"><div class="donut" style="background:conic-gradient('+expGr+')"><div class="donut-center"><div class="donut-center-val">'+esc(expTot?.monthly)+'</div><div class="donut-center-lbl">Monthly burn</div></div></div><div class="donut-legend">'+expSegs.map(x => '<div class="leg-row"><div class="leg-sq" style="background:'+x.col+'"></div>'+esc(x.category)+' · '+esc(x.monthly)+' ('+esc(x.pct)+')</div>').join('')+'</div></div></div>';
+  document.getElementById('expTable').innerHTML = '<div class="card"><div class="card-head"><div class="card-title">Expense Detail</div></div><table><thead><tr><th>Category</th><th>Monthly</th><th>% Burn</th><th>Trend</th><th>Status</th><th>Notes</th></tr></thead><tbody>'+expItems.map(r => '<tr><td class="name">'+esc(r.category)+'</td><td class="mono">'+esc(r.monthly)+'</td><td class="mono">'+esc(r.pct)+'</td><td>'+esc(r.trend)+'</td><td>'+badge(r.status)+'</td><td class="note">'+esc(r.notes)+'</td></tr>').join('')+'</tbody></table></div>';
+
+  // Delivery
+  document.getElementById('delTable').innerHTML = '<div class="card"><div class="card-head"><div class="card-title">Client & Delivery Health</div><div class="card-count">'+data.delivery.length+' accounts</div></div><table><thead><tr><th>Account</th><th>Health</th><th>Last Touch</th><th>Open Commitments</th><th>Risks</th><th>Proof Points</th></tr></thead><tbody>'+data.delivery.map(r => '<tr><td class="name">'+esc(r.account)+'</td><td>'+badge(r.health)+'</td><td class="mono">'+esc(r.last_touch)+'</td><td>'+esc(r.open)+'</td><td style="color:'+(statusClass(r.health)==='Red'?'var(--red)':statusClass(r.health)==='Amber'?'var(--amber)':'inherit')+'">'+esc(r.risks)+'</td><td class="note">'+esc(r.proof)+'</td></tr>').join('')+'</tbody></table></div>';
+
+  // Actions
+  const rc = data.actions.filter(r => statusClass(r.status)==='Red').length;
+  const ac = data.actions.filter(r => statusClass(r.status)==='Amber').length;
+  const gc = data.actions.filter(r => statusClass(r.status)==='Green').length;
+  document.getElementById('actTable').innerHTML = '<div class="card"><div class="card-head"><div class="card-title">Action Items</div><div class="card-count">'+data.actions.length+' items · '+rc+' red · '+ac+' amber · '+gc+' green</div></div><table><thead><tr><th>#</th><th>Action</th><th>Source</th><th>Owner</th><th>Due</th><th>Status</th><th>Flag?</th></tr></thead><tbody>'+data.actions.map(r => '<tr><td class="mono">'+esc(r.num)+'</td><td class="'+(statusClass(r.status)==='Red'?'name':'')+'">'+esc(r.action)+'</td><td>'+esc(r.source)+'</td><td class="mono">'+esc(r.owner)+'</td><td class="mono">'+esc(r.due)+'</td><td>'+badge(r.status)+'</td><td style="'+((r.flag||'').toLowerCase().includes('yes')?'color:var(--red);font-weight:600':'')+'">'+esc(r.flag)+'</td></tr>').join('')+'</tbody></table></div>';
+
+  // Flags
+  const reds = data.flags.filter(f => f.color.includes('🔴'));
+  const ambers = data.flags.filter(f => f.color.includes('🟡'));
+  document.getElementById('flagsRed').innerHTML = reds.map(r => '<div class="flag flag-r"><div class="flag-title">🔴 '+esc(r.flag)+'</div><div class="flag-body">'+esc(r.detail)+'</div><div class="flag-meta"><span>Owner: '+esc(r.owner)+'</span><span>Decision: '+esc(r.decision)+'</span><span>By: '+esc(r.by)+'</span></div></div>').join('');
+  document.getElementById('flagsAmber').innerHTML = ambers.map(r => '<div class="flag flag-a"><div class="flag-title">🟡 '+esc(r.flag)+'</div><div class="flag-body">'+esc(r.detail)+'</div><div class="flag-meta"><span>Owner: '+esc(r.owner)+'</span><span>Decision: '+esc(r.decision)+'</span><span>By: '+esc(r.by)+'</span></div></div>').join('');
+
+  // Acknowledged
+  document.getElementById('ackList').innerHTML = '<div class="card" style="padding:20px 24px">'+data.acknowledged.map(t => '<div class="green-item"><div class="green-dot"></div><div class="green-text">'+esc(t)+'</div></div>').join('')+'</div>';
+
+  // Continuity
+  const footerMatch = (data.footer||'').match(/Next:\s*(.+?)(?:\s*\((.+?)\))?$/);
+  document.getElementById('continuity').innerHTML = '<div style="padding:18px 22px;background:var(--bg-2);border:.5px solid var(--border);border-radius:var(--radius-lg)"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><div><span style="font-family:var(--ff-mono);font-size:.65rem;color:var(--text-3)">CONTINUITY</span><div style="font-size:.78rem;color:var(--text-2);margin-top:3px">Report <span style="color:var(--teal)">'+esc(m.number)+'</span> · '+esc(m.date)+' → 08 People & Ops / Weekly Reports</div></div><div style="font-family:var(--ff-mono);font-size:.65rem;color:var(--text-3)">'+(footerMatch ? 'Next: '+esc(footerMatch[1])+' · '+esc(footerMatch[2]||'') : esc(data.footer))+'</div></div></div>';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MAIN
+// ═══════════════════════════════════════════════════════════════
+async function loadAll() {
+  if (SHEET_CSV_URL && SHEET_CSV_URL.length > 10) {
+    document.getElementById('chipLive').style.display = '';
+    try {
+      const resp = await fetch(SHEET_CSV_URL);
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const text = await resp.text();
+      const rows = parseCSV(text);
+      const data = parseReport(rows);
+      render(data);
+    } catch (e) {
+      document.getElementById('errorArea').innerHTML = '<div class="error-msg">Failed to load from Google Sheets: '+esc(e.message)+'</div>';
+      document.getElementById('setupBanner').style.display = 'block';
+    }
+  } else {
+    document.getElementById('setupBanner').style.display = 'block';
+    // Fallback: parse the hardcoded data inline
+    loadFallback();
+  }
+}
+
+function loadFallback() {
+  // Hardcoded rows matching exact spreadsheet layout for Report #001
+  const rows = [
+    ['RESONANCE — MONDAY C-SUITE REPORT','','','','','',''],
+    ['April 7, 2026   ·   Report #001   ·   Owner: Ray   ·   Source: Master Financial Tracker (Jan 2025 – Mar 2026)','','','','','',''],
+    ['','','','','','',''],
+    ['','','','','','',''],
+    ['BURN & RUNWAY','','','','','',''],
+    ['','Metric','Current','Target','Variance','Status','Notes'],
+    ['1','Cash in Bank (Chase)','$29,898','—','—','🔴 Red','Mar 31 balance. Does NOT include Nissi liability.'],
+    ['2','Nissi Contractor Liability','–$60,360','$0','–$60,360','🔴 Red','3 months unpaid (Jan/Feb/Mar 2026 at $20,120/mo). Last pmt Mar 10 covered Dec.'],
+    ['3','TRUE Net Cash Position','–$30,462','—','—','🔴 Red','Bank minus what we owe. Payment plan needed THIS WEEK.'],
+    ['4','Monthly Burn (Mar 2026)','$29,000','$28,000','–$1,000','🟡 Amber','Chase + Brex combined. Nissi = 69% of burn.'],
+    ['5','Runway — Base Case','8.4 months','9+ months','—','🟡 Amber','3% MRR growth, flat burn, +$2,750 new client.'],
+    ['6','Runway — Conservative','4.1 months','—','—','🔴 Red','Flat MRR, 2% burn creep. Cash zero ~Aug 2026.'],
+    ['7','Runway — Optimistic','18+ months','—','—','🟢 Green','8% growth, 5% burn reduction, +$8K new rev.'],
+    ['8','Capchase Debt','$0 — Cleared','$0','$0','🟢 Green','Fully repaid May 2025.'],
+    ['','','','','','',''],
+    ['REVENUE — ALL CLIENTS','','','','','',''],
+    ['','Client','MRR','ARR','Last Invoice','Status','Notes'],
+    ['1','FEC / NYCHA','$4,112','$49,344','Mar 2026','🟢 Green','2,056 HH × $2/unit. Strongest account.'],
+    ['2','Wollman Rink','$3,500','$42,000','Mar 2026','🟢 Green','Consistent monthly payer.'],
+    ['3','Heavy Metal','$3,500','$42,000','Mar 2026','🟢 Green','Consistent monthly payer.'],
+    ['4','HOU — West Brighton','Annual','$38,250','Aug 2025','🟡 Amber','ANNUAL draw — not MRR. 245 days since last. Contract ends May 2026. Liz: confirm draw + renewal.'],
+    ['5','Kalel Companies','$2,750','$33,000','Mar 2026','🟢 Green','Via Preservation Logistics.'],
+    ['6','Merola / SFO','$1,333','$16,000','Mar 2026','🟢 Green','Seasonal program billing.'],
+    ['7','Laffont','$1,042','$12,500','Nov 2025','🟡 Amber','5 months since last invoice. Confirm contract active.'],
+    ['8','Double Edge Theatre','$950','$11,400','Mar 2026','🟢 Green','Per-module billing.'],
+    ['9','Tuxedo (NEW)','$900','$10,800','TBD','🟡 Amber','New client — first invoice pending.'],
+    ['10','Lindemann','$917','$11,000','Oct 2025','🟡 Amber','6 months since last invoice. Confirm contract active.'],
+    ['11','Symbolic World','$850','$10,200','Mar 2026','🟢 Green','Current.'],
+    ['12','AES','$700','$8,400','Mar 2026','🟢 Green','Current.'],
+    ['13','ICDT','$280','$3,360','Jun 2025','🔴 Red','300+ days no invoice. Write-off candidate.'],
+    ['','TOTALS','$20,833/mo','$288,254/yr','','','MRR = 12 monthly. ARR includes HOU annual. Pipeline: 3i at $1,600/mo (not contracted).'],
+    ['','','','','','',''],
+    ['EXPENSE BREAKDOWN — MARCH 2026','','','','','',''],
+    ['','Category','Monthly $','% of Burn','Trend','Status','Notes'],
+    ['1','Nissi — Dev Contractor','$20,120','69%','Flat','🟡 Amber','$20,120/mo fixed. Largest expense by far. 3 months behind.'],
+    ['2','W-2 Payroll + Gusto Fee','$1,391','5%','Flat','🟢 Green','~$1,191 net + ~$100 tax + ~$100 Gusto fee.'],
+    ['3','SaaS & Software','~$1,200','4%','Flat','🟢 Green','Stacker, Webflow, Teamup, Intercom, Figma, etc.'],
+    ['4','Chase Card Spend','~$2,500','9%','Variable','🟢 Green','Misc operational via Chase debit.'],
+    ['5','Insurance','~$1,200','4%','Flat','🟢 Green','Business insurance.'],
+    ['6','Servers & Infrastructure','~$400','1%','Flat','🟢 Green','Cloud hosting.'],
+    ['7','Consulting','~$500','2%','Declining','🟢 Green','Down from 2025 levels.'],
+    ['8','Tax, Fees, Other','~$700','2%','Flat','🟢 Green','State filings, bank fees, misc.'],
+    ['','TOTAL BURN','~$29,000','100%','','','Chase + Brex combined.'],
+    ['','','','','','',''],
+    ['CLIENT & DELIVERY HEALTH','','','','','',''],
+    ['','Account','Health','Last Touch','Open Commitments','Risks','Proof Points'],
+    ['1','FEC / NYCHA','🟢 Green','Apr 4','Phase 2 scenario modeling','','4-min audit packages. Weeks→min scenario planning.'],
+    ['2','Kalel','🟢 Green','Apr 3','Compliance report template v2','','5,000+ hrs reclaimed. 90% compliance tracking reduction.'],
+    ['3','HTX / HHA','🟡 Amber','Mar 28','Sole source under review','10 days no response','Follow up this week — Liz contact exec office.'],
+    ['4','HOU — West Brighton','🟡 Amber','Aug 2025','Contract renewal May 2026','245 days since last draw','Liz: confirm 2026 draw + renewal.'],
+    ['5','Tuxedo (NEW)','🟡 Amber','TBD','Onboarding','New — no history','Confirm billing start date.'],
+    ['6','ICDT','🔴 Red','Jun 2025','','300+ days. Write-off?','Discuss: collect or write off.'],
+    ['','','','','','',''],
+    ['ACTION ITEMS','','','','','',''],
+    ['','Action Item','Source','Owner','Due','Status','C-Suite Flag?'],
+    ['1','Nissi payment plan — 3 months outstanding ($60,360)','Finance','Liz + Ray','Apr 9','🔴 Red','YES — #1 priority'],
+    ['2','HTX follow-up — 10 days no response on sole source','Delivery','Ray + Liz','Apr 9','🔴 Red','YES'],
+    ['3','Respond to Reformation Partners — $120M fund, 2 unanswered','Investor','Ray','Apr 9','🔴 Red','YES'],
+    ['4','ICDT decision — collect ($2,800+) or write off','Finance','Ray + Liz','Apr 14','🔴 Red','YES'],
+    ['5','Confirm HOU 2026 draw timing + renewal (ends May)','AR','Liz','Apr 11','🟡 Amber','YES'],
+    ['6','Re-engage Five Elms Capital (6 mo past reconnection)','Investor','Ray','Apr 11','🟡 Amber','No'],
+    ['7','Confirm Laffont billing — last invoice Nov 2025','AR','Ray','Apr 11','🟡 Amber','No'],
+    ['8','Confirm Lindemann billing — last invoice Oct 2025','AR','Ray','Apr 11','🟡 Amber','No'],
+    ['9','Onboard Tuxedo — billing start + first invoice','Delivery','Ray','Apr 11','🟡 Amber','No'],
+    ['10','Liz/Ray meeting — pending items tracker','Reset Deck','Liz + Ray','Apr 9-10','🟡 Amber','No'],
+    ['11','Liz 1:1 with Sushanth — product + capacity','Reset Deck','Liz','Apr 9','🟡 Amber','No'],
+    ['12','Central repo folder TOC — Liz/Sean sign-off','Ops','Ray','Apr 9','🟢 Green','No — ready for review'],
+    ['13','Monday report template operational','Ops','Ray','Done','🟢 Green','This is Report #001'],
+    ['14','Investor tracker rebuilt (33 records + playbook)','Ops','Ray','Done','🟢 Green','Complete'],
+    ['','','','','','',''],
+    ['C-SUITE FLAGS — DECISIONS REQUIRED','','','','','',''],
+    ['','Flag','Severity','What Happened','Owner','Decision Needed','By When'],
+    ['🔴','Nissi — 3 months unpaid ($60,360)','CRITICAL','Bank shows $30K but true position is –$30K. Contractor relationship at risk.','Liz + Ray','Payment plan: catch-up schedule','This week'],
+    ['🔴','ICDT — 300+ days ($280/mo)','HIGH','$2,800+ uncollectable? Last invoice Jun 2025.','Ray + Liz','Collect or write off','This week'],
+    ['🔴','HTX — 10 days silence','HIGH','Sole source proposal may be misrouted.','Ray + Liz','Liz contacts exec. Ray preps RFP alt.','This week'],
+    ['🔴','Reformation Partners ghosted','HIGH','$120M fund. Two follow-ups ignored.','Ray','Respond + apologize + request call','This week'],
+    ['🟡','HOU draw timing unknown','MEDIUM','Contract ends May 2026. Last draw Aug 2025.','Liz','Confirm draw + renewal intent','By Apr 14'],
+    ['🟡','Laffont + Lindemann gaps','MEDIUM','5-6 months since invoices.','Ray','Confirm active + invoice if needed','By Apr 14'],
+    ['🟡','Runway at 8.4 mo (base)','MEDIUM','Below 9 mo target. Legal costs contributing.','Ray','Monitor. Discuss burn levers.','Ongoing'],
+    ['','','','','','',''],
+    ['ACKNOWLEDGED — NO DISCUSSION NEEDED','','','','','',''],
+    ['1','FEC/NYCHA — consistent payer, strongest proof points (4-min audits, scenario planning)','','','','',''],
+    ['2','Kalel — 5,000+ hrs reclaimed, 90% compliance reduction, zero missed deadlines','','','','',''],
+    ['3','Wollman Rink + Heavy Metal — consistent monthly, no issues','','','','',''],
+    ['4','Active client collections — no invoices >30 days (excl. ICDT)','','','','',''],
+    ['5','Capchase debt — fully repaid May 2025, confirmed cleared','','','','',''],
+    ['6','Folder structure TOC — built, ready for Liz/Sean sign-off','','','','',''],
+    ['7','Monday reporting — Report #001 operational (this file)','','','','',''],
+    ['8','Investor tracker — 33 records rebuilt, feedback playbook, DD readiness checklist','','','','',''],
+    ['','','','','','',''],
+    ['Save as: 2026-04-07 Monday Report #001  →  08 People & Ops / Weekly Reports     ·     Next: April 14, 2026 (Report #002)','','','','','',''],
+  ];
+  render(parseReport(rows));
+}
+
+function go(id){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));document.getElementById(id).classList.add('on');event.target.classList.add('on')}
+function toggleTheme(){const h=document.documentElement;h.dataset.theme=h.dataset.theme==='dark'?'light':'dark'}
+loadAll();
+</script>
+</body>
+</html>
