@@ -255,18 +255,21 @@ async function loadAll() {
     document.getElementById('chipLive').style.display = '';
     try {
       const resp = await fetch(SHEET_CSV_URL);
-      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      if (!resp.ok) throw new Error('Proxy returned HTTP ' + resp.status);
       const text = await resp.text();
+      if (!text || text.length < 50) throw new Error('Empty response from proxy (' + (text||'').length + ' bytes)');
       const rows = parseCSV(text);
+      if (!rows || rows.length < 10) throw new Error('CSV parsed but only ' + (rows?rows.length:0) + ' rows');
       const data = parseReport(rows);
       render(data);
+      document.getElementById('chipLive').textContent = '● Live · ' + new Date().toLocaleTimeString();
     } catch (e) {
-      document.getElementById('errorArea').innerHTML = '<div class="error-msg">Failed to load from Google Sheets: '+esc(e.message)+'</div>';
-      document.getElementById('setupBanner').style.display = 'block';
+      console.error('Sheet fetch error:', e);
+      document.getElementById('errorArea').innerHTML = '<div class="error-msg">Failed to load live data: ' + esc(e.message) + '<br>Showing fallback data below.</div>';
+      loadFallback();
     }
   } else {
     document.getElementById('setupBanner').style.display = 'block';
-    // Fallback: parse the hardcoded data inline
     loadFallback();
   }
 }
