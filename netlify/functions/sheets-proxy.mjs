@@ -1,5 +1,5 @@
 export default async (req) => {
-  const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ8GfPm9fubt3wzJxXtFQMZG8ZJ1P1j3PW2ndDCvtJbmu9td5dYTEOoKpnQyMa1yg/pub?gid=1617328708&single=true&output=csv';
+  const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTV0IUJNvYzi8Pl5Li-CldUt9WzT3rhzUl09SdtHLnKF047FUgLuNhG-coku6YaXE4i1kh3l_PHFP9F/pub?gid=1621047425&single=true&output=csv';
 
   try {
     const resp = await fetch(url);
